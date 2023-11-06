@@ -1,0 +1,50 @@
+from abc import ABC
+from datetime import datetime
+
+import pandas as pd
+
+
+class Table(ABC):
+    encoding: str
+    file_name: str
+    df: pd.DataFrame
+    colums_names: list[str]
+    date_format: str
+
+    def __init__(self, file_name: str) -> None:
+        self.encoding = "latin-1"
+        self.file_name = file_name
+
+    def open_csv(self):
+        """Open csv file and save it in a pandas dataframe"""
+        self.df = pd.read_csv(f"csv/{self.file_name}", sep="\t", encoding=self.encoding, names=self.colums_names)
+
+    def format(self):
+        """Format the dataframe"""
+        pass
+
+    def print_colums(self):
+        """Print the columns of the dataframe"""
+        print(self.df.columns)
+
+    def apply_func_to_col(self, target: str, func: callable):
+        """Apply a function to a column of the dataframe
+
+        Args:
+            target (str): column name
+            func (callable): function to apply
+        """
+        self.df[target] = self.df[target].apply(lambda row: func(row))
+
+    def convert_date(self, date_str: int | str) -> str:
+        """Convert a date from a format to another
+
+        Args:
+            date_str (int | str): the date to convert 
+            date_format (str): the format of the date
+
+        Returns:
+            str: the converted date
+        """
+        date = datetime.strptime(str(date_str), self.date_format)
+        return date.strftime("%Y-%m-%d")

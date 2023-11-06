@@ -2,6 +2,7 @@ from abc import ABC
 from datetime import datetime
 
 import pandas as pd
+from uwutilities import String_tools
 
 
 class Table(ABC):
@@ -48,3 +49,6 @@ class Table(ABC):
         """
         date = datetime.strptime(str(date_str), self.date_format)
         return date.strftime("%Y-%m-%d")
+
+    def __str__(self):
+        return f"{self.__class__.__name__} - {self.df.shape[0]} élément{String_tools.singular_or_plural(self.df.shape[0])}"

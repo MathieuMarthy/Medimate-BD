@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 import requests
 import json
@@ -13,10 +14,15 @@ class Scraper:
         self._load_updateDate()
 
     def get_files_to_download(self):
-        res = requests.get(self.url)
+        try:
+            logging.info(f"scrapping \"{self.url}\"")
+            res = requests.get(self.url)
 
-        if not res.ok:
-            raise Exception(f"Erreur lors de la requête, url: {self.url}")
+            if not res.ok:
+                raise Exception(f"Erreur lors de la requête, url: {self.url}")
+
+        except Exception as e:
+            logging.error(exc_info=True)
 
         soup = bs4(res.text, "html.parser")
 
@@ -64,13 +70,16 @@ class Scraper:
         filename = self._get_name_by_url(url)
 
         params = {"downloadformat": "csv"}
-        res = requests.get(url, params=params)
+        try:
+            res = requests.get(url, params=params)
 
-        if not res.ok:
-            raise Exception(f"Erreur lors de la requête, url: {url}")
+            if not res.ok:
+                raise Exception(f"Erreur lors de la requête, url: {url}")
+        except Exception as e:
+            logging.error("error while downloading file", exc_info=True)
 
         open(f"csv/{filename}", "wb").write(res.content)
-        print(f"💾 {filename} téléchargé")
+        logging.info(f"{filename} téléchargé")
         return filename
 
     def _load_updateDate(self):

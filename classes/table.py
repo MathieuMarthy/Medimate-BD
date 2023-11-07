@@ -51,4 +51,4 @@ class Table(ABC):
         return date.strftime("%Y-%m-%d")
 
     def __str__(self):
-        return f"{self.__class__.__name__} - {self.df.shape[0]} élément{String_tools.singular_or_plural(self.df.shape[0])}"
+        return f"{self.__class__.__name__}: {self.df.shape[0]} élément{String_tools.singular_or_plural(self.df.shape[0])}"

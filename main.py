@@ -1,21 +1,24 @@
+import logging
+
 from Scraper import Scraper
 from formatTable import TableFormat
 
-from classes.table import Table
-from classes.getTable import get_table
+# == logger == #
+logging.basicConfig(filename="log.txt",
+                    filemode="a",
+                    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+                    datefmt="%H:%M:%S",
+                    level=logging.INFO)
 
-# == Scrap
+# == Scrap == #
 scrapper = Scraper()
 urls = scrapper.get_files_to_download()
 
-# == Download
-tables: list[Table] = []
+# == Download == #
 for url in urls:
-    filename = scrapper.download_file(url)
-    tables.append(get_table(filename))
+    scrapper.download_file(url)
 
-
-# == Format
+# == Format == #
 tableFormat = TableFormat()
 tableFormat.format_tables()
 

@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 from classes.bdpm import Bdpm
 from classes.cip_bdpm import Cip
@@ -38,10 +40,14 @@ class TableFormat:
     def format_tables(self):
         """Format all the tables"""
 
+        logging.info("formating tables")
         for table in self.tables:
             table.format()
 
-        self._format_code_cis()
+        try:
+            self._format_code_cis()
+        except Exception as e:
+            logging.error("error while formating tables", exc_info=True)
 
     def _format_code_cis(self):
         """Keep only the CIS Codes which are in all the tables"""

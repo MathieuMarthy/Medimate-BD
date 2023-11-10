@@ -22,10 +22,16 @@ class Asmr(Table):
             "Valeur de l'ASMR", "Libelle de l'ASMR"
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)
 
-        self.date_format = "%Y%m%d"
-        self.apply_func_to_col(
-            "Date de l’avis de la Commission de la transparence",
-            self.convert_date
-        )
+        ## "Libelle de l'ASMR"
+        # self.df["Libelle de l'ASMR"].replace("\x92", "'", regex=True, inplace=True)
+
+        ## "Valeur de l'ASMR"
+        # for libelle in [
+        #     "Commentaires sans chiffrage de l'ASMR",
+        #     "Sans objet",
+        #     "Non précisée"
+        # ]:
+        #     self.df["Valeur de l'ASMR"].replace(libelle, "?", inplace=True)
+

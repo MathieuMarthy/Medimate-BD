@@ -23,7 +23,7 @@ class Cip(Table):
             "Agrément aux collectivités"
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)
 
         self.date_format = "%d/%m/%Y"
         self.apply_func_to_col("Date de la déclaration de commercialisation", self.convert_date)

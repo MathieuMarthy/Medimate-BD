@@ -33,7 +33,7 @@ class Info(Table):
 
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)
         self.apply_func_to_col("Texte à afficher et lien vers l’information de sécurité", self.extract_link)
 
     def extract_link(self, txt: str) -> str:

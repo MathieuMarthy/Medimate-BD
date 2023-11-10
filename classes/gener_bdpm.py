@@ -19,4 +19,4 @@ class Gener(Table):
 
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)

@@ -17,15 +17,23 @@ class Bdpm(Table):
         self.open_csv()
 
     def format(self):
+        # on garde que les médicaments qui sont commercialisés et autorisé
+        self.df = self.df.loc[
+            (self.df["Etat de commercialisation"] == "Commercialisée") &
+            (self.df["Statut administratif de l’AMM"] == "Autorisation active")]
+
         columns_to_delete = [
             "Type de procédure d'AMM", "Date d’AMM (format JJ/MM/AAAA)",
             "StatutBdm : «Alerte»/ «disponibilité »", "Numéro de l’autorisation européenne",
             "Etat de commercialisation"
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)
 
-        # on garde que les médicaments qui sont commercialisés et autorisé
-        self.df = self.df.loc[
-            (self.df["Etat de commercialisation"] == "Commercialisée") &
-            (self.df["Statut administratif de l’AMM"] == "Autorisation active")]
+        # ["Code CIS", "Dénomination du médicament", "Forme pharmaceutique",
+        #        "Voies d"administration", "Statut administratif de l’AMM",
+        #        "Titulaire(s)", "Surveillance renforcée (triangle noir) Oui/Non"]
+
+        for libelle, occu in self.df["Forme pharmaceutique"].value_counts().items():
+            if "capsule" in libelle:
+                print(libelle, occu)

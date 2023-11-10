@@ -19,7 +19,7 @@ class Smr(Table):
 
         ]
 
-        self.df.drop(columns_to_delete, axis=1)
+        self.df.drop(columns_to_delete, axis=1, inplace=True)
         self.date_format = "%Y%m%d"
         self.apply_func_to_col(
             "Date de l’avis de la Commission de la transparence Valeur du SMR Libelle du SMR",

@@ -9,7 +9,7 @@ logging.basicConfig(filename="log.txt",
                     format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.INFO)
-
+"""
 # == Scrap == #
 scrapper = Scraper()
 urls = scrapper.get_files_to_download()
@@ -17,9 +17,10 @@ urls = scrapper.get_files_to_download()
 # == Download == #
 for url in urls:
     scrapper.download_file(url)
+"""
 
 # == Format == #
 tableFormat = TableFormat()
 tableFormat.format_tables()
 
-tableFormat.print_tables()
+# tableFormat.print_tables()

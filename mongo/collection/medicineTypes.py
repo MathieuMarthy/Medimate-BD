@@ -1,7 +1,12 @@
 
 
 class MedicineTypes:
-    COMPRIME = "comprime"
-    SACHET = "sachet"
-    GELLULE = "gellule"
-    AUTRE = "autre"
+    types = [
+        "comprime",
+        "sachet",
+        "gelule",
+        "capsule",
+        "pommade",
+        "solution buvable",
+        "poudre"
+     ]

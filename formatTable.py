@@ -12,7 +12,10 @@ from classes.info_importantes import Info
 from classes.lienpageCT_bdpm import Lienpage
 from classes.smr_bdpm import Smr
 from mongo.collection.collection import Collection
+from mongo.collection.medicineTypes import MedicineTypes
 from mongo.collection.medicines import Medicines
+from unidecode import unidecode
+
 
 
 class TableFormat:
@@ -81,7 +84,9 @@ class TableFormat:
             m_type = self._get_generic_type(line)
 
             medicine = medicines.get_or_add_medicine(m_name)
-            medicine.add_type_weight(m_type, m_name)
+            medicine.add_type_weight(m_type, m_weight)
+
+        return [medicines]
 
     def _get_medicine_weight(self, medicine_name: str):
         name_weight = medicine_name.split(",")[0]
@@ -96,4 +101,13 @@ class TableFormat:
         return name_weight[:digit_index.start()], name_weight[digit_index.start():]
 
     def _get_generic_type(self, string: str) -> str:
-        pass
+
+        # solution injectable
+        # perfusion
+        # comprimé gastro-résistant
+        string = unidecode(string.strip().lower())
+        for type in MedicineTypes.types:
+            if type in string:
+                return type
+
+        return "autre"

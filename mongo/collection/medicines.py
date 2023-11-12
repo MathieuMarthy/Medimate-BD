@@ -1,5 +1,7 @@
 from typing import Optional
 
+from mongo.collection.collection import Collection
+
 
 class Medicine:
     name: str
@@ -10,13 +12,13 @@ class Medicine:
         self.type_weight = {}
 
     def add_type_weight(self, medicine_type: str, weight: str):
-        self.type_weight[medicine_type] = self.type_weight.get(medicine_type, []) + [weight]
+        self.type_weight[medicine_type] = list(set(self.type_weight.get(medicine_type, []) + [weight]))
 
     def __str__(self):
         return f"{self.name} - {self.type_weight}"
 
 
-class Medicines:
+class Medicines(Collection):
     medicines: list[Medicine] = []
 
     def _get_medicine_by_name(self, name) -> Optional[Medicine]:

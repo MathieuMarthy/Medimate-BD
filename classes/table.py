@@ -1,5 +1,6 @@
 from abc import ABC
 from datetime import datetime
+from typing import Union
 
 import pandas as pd
 from uwutilities import String_tools
@@ -37,7 +38,7 @@ class Table(ABC):
         """
         self.df[target] = self.df[target].apply(lambda row: func(row))
 
-    def convert_date(self, date_str: int | str) -> str:
+    def convert_date(self, date_str: Union[int, str]) -> str:
         """Convert a date from a format to another
 
         Args:

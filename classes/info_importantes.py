@@ -1,10 +1,11 @@
 import os
 import re
+from typing import Union
 
 from classes.table import Table
 
 
-def find_file_name() -> str | None:
+def find_file_name() -> Union[str, None]:
     files = os.listdir("csv")
 
     motif = re.compile(r'^CIS_InfoImportantes.*$')

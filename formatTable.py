@@ -1,5 +1,7 @@
 import logging
 import re
+import time
+from typing import List
 
 import pandas as pd
 from classes.bdpm import Bdpm
@@ -98,16 +100,15 @@ class TableFormat:
         if not digit_index:
             return name_weight, None
 
-        return name_weight[:digit_index.start()], name_weight[digit_index.start():]
+        return name_weight[:digit_index.start()].strip(), name_weight[digit_index.start():].strip()
 
     def _get_generic_type(self, string: str) -> str:
 
         # solution injectable
         # perfusion
-        # comprimé gastro-résistant
         string = unidecode(string.strip().lower())
-        for type in MedicineTypes.types:
-            if type in string:
-                return type
+        for medi_type in MedicineTypes.types:
+            if medi_type in string:
+                return medi_type
 
         return "autre"

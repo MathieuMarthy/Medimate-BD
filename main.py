@@ -24,4 +24,5 @@ tableFormat = TableFormat()
 tableFormat.format_tables()
 
 # == Transform into mongo collections == #
-tableFormat.get_mongo_collections()
+collections = tableFormat.get_mongo_collections()
+print(collections)

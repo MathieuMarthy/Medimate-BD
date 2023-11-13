@@ -1,18 +1,28 @@
+import dataclasses
 from typing import Optional
+from dataclasses import dataclass
 
 from mongo.collection.collection import Collection
 
 
+@dataclass
+class TypeWeight:
+    weight: str
+    true_name: str
+
+
 class Medicine:
     name: str
-    type_weight: dict
+    type_weight: dict[str, list[TypeWeight]]
 
     def __init__(self, name: str):
         self.name = name
         self.type_weight = {}
 
-    def add_type_weight(self, medicine_type: str, weight: str):
-        self.type_weight[medicine_type] = list(set(self.type_weight.get(medicine_type, []) + [weight]))
+    def add_type_weight(self, medicine_type: str, weight: str, true_type_name: str):
+        self.type_weight[medicine_type] = list(set(
+            self.type_weight.get(medicine_type, []) + [TypeWeight(weight, true_type_name)]
+        ))
 
     def __str__(self):
         return f"{self.name} - {self.type_weight}"

@@ -2,6 +2,7 @@ import logging
 
 from Scraper import Scraper
 from formatTable import TableFormat
+from mongo.collection.medicines import Medicines
 
 # == logger == #
 logging.basicConfig(filename="log.txt",
@@ -25,4 +26,3 @@ tableFormat.format_tables()
 
 # == Transform into mongo collections == #
 collections = tableFormat.get_mongo_collections()
-print(collections)

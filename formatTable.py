@@ -86,7 +86,7 @@ class TableFormat:
             m_type = self._get_generic_type(line)
 
             medicine = medicines.get_or_add_medicine(m_name)
-            medicine.add_type_weight(m_type, m_weight)
+            medicine.add_type_weight(m_type, m_weight, )
 
         return [medicines]
 
@@ -106,6 +106,8 @@ class TableFormat:
 
         # solution injectable
         # perfusion
+        # effervescent
+        string = string.split(",")[-1]
         string = unidecode(string.strip().lower())
         for medi_type in MedicineTypes.types:
             if medi_type in string:

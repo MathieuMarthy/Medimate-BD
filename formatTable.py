@@ -1,7 +1,6 @@
 import logging
 import re
-import time
-from typing import List
+from typing import Tuple
 
 import pandas as pd
 from classes.bdpm import Bdpm
@@ -83,10 +82,10 @@ class TableFormat:
         # collection medicine
         for line in self.Bdpm.df["Dénomination du médicament"]:
             m_name, m_weight = self._get_medicine_weight(line)
-            m_type = self._get_generic_type(line)
+            m_type, m_true_type = self._get_generic_type(line)
 
             medicine = medicines.get_or_add_medicine(m_name)
-            medicine.add_type_weight(m_type, m_weight, )
+            medicine.add_type_weight(m_type, m_weight, m_true_type)
 
         return [medicines]
 
@@ -102,15 +101,16 @@ class TableFormat:
 
         return name_weight[:digit_index.start()].strip(), name_weight[digit_index.start():].strip()
 
-    def _get_generic_type(self, string: str) -> str:
+    def _get_generic_type(self, string: str) -> Tuple[str, str]:
 
         # solution injectable
         # perfusion
         # effervescent
         string = string.split(",")[-1]
         string = unidecode(string.strip().lower())
+
         for medi_type in MedicineTypes.types:
             if medi_type in string:
-                return medi_type
+                return medi_type, string
 
-        return "autre"
+        return "autre", string

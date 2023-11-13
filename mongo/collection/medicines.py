@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from mongo.collection.collection import Collection
 
 
-@dataclass
+@dataclass(frozen=True)
 class TypeWeight:
     weight: str
     true_name: str
@@ -45,3 +45,10 @@ class Medicines(Collection):
             self.medicines.append(medicine)
 
         return medicine
+
+    def get_medicine(self, medicine_name: str) -> Optional[Medicine]:
+        for medicine in self.medicines:
+            if medicine.name == medicine_name.upper():
+                return medicine
+
+        return None

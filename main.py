@@ -26,3 +26,6 @@ tableFormat.format_tables()
 
 # == Transform into mongo collections == #
 collections = tableFormat.get_mongo_collections()
+
+medicines: Medicines = collections[0]
+print(medicines.get_medicine("doliprane"))

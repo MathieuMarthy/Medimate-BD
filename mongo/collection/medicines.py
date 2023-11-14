@@ -1,6 +1,5 @@
 from typing import Optional
 
-from mongo.collection.collection import Collection
 from mongo.collection.medicine_data import *
 
 
@@ -8,7 +7,7 @@ class Medicine:
     name: str
     code_cis: str
     code_has: str
-    type: Type
+    type: MType
     sales_info: SalesInfos
     usage: Usage
     composition: Composition
@@ -29,7 +28,7 @@ class Medicine:
     def set_code_has(self, new: str):
         self.code_has = new
 
-    def set_type(self, new: Type):
+    def set_type(self, new: MType):
         self.type = new
 
     def set_sales_info(self, new: SalesInfos):
@@ -54,7 +53,7 @@ class Medicine:
         return f"{self.name} - {self.type_weight}"
 
 
-class Medicines(Collection):
+class Medicines:
     medicines: list[Medicine] = []
 
     def _get_medicine_by_name(self, name) -> Optional[Medicine]:

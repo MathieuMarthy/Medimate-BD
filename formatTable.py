@@ -1,7 +1,7 @@
 import logging
 import re
 import time
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Type, Union
 
 import pandas as pd
 from classes.bdpm import Bdpm
@@ -80,7 +80,7 @@ class TableFormat:
         for table in self.tables:
             print(table)
 
-    def get_mongo_collections(self) -> list[Collection]:
+    def get_mongo_collections(self) -> Medicines:
         start = time.time()
         medicines = Medicines()
 
@@ -116,7 +116,7 @@ class TableFormat:
 
             medicine = medicines.get_or_add_medicine(m_name)
             medicine.set_type(
-                Type(
+                MType(
                     m_type,
                     m_true_type,
                     m_weight
@@ -132,10 +132,14 @@ class TableFormat:
             )
 
             # == Composition
-            continue
             medicine.set_composition(
                 Composition(
-
+                    self._transform_in(self._get_value(compo, "Code de la substance"), int),
+                    self._get_value(compo, "Dénomination de la substance"),
+                    self._get_value(compo, "Dosage de la substance"),
+                    self._get_value(compo, "Référence de ce dosage"),
+                    self._get_value(compo, "Nature du composant"),
+                    self._get_value(compo, "Numéro de liaison SA/FT"),
                 )
             )
 
@@ -168,7 +172,23 @@ class TableFormat:
             )
 
         logging.info(f"get mongo collections done in {time.time() - start} seconds")
-        return [medicines]
+        return medicines
+
+    def _transform_in(self, object: Union[str, int, None], type: Type) -> Union[str, int, None]:
+        """Transform an object in a type
+
+        Args:
+            object: the object to transform
+            type: the type to transform in
+
+        Returns:
+            str | int | None: the object transformed
+        """
+        try:
+            resultat = type(object)
+            return resultat
+        except (ValueError, TypeError):
+            return None
 
     def _get_line_by_cis(self, table: Table, code_cis: int) -> pd.DataFrame:
         """Get the line of a table by CIS Code

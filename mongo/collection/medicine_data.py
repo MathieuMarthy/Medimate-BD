@@ -2,10 +2,10 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Type:
+class MType:
     generic: str
     complet: str
-    wieght: str
+    weight: str
 
 
 @dataclass

@@ -1,16 +1,20 @@
+from dataclasses import dataclass
 
 
+@dataclass
 class Type:
     generic: str
     complet: str
     wieght: str
 
 
+@dataclass
 class Usage:
     route_administration: str
     condition_prescription_delivery: str
 
 
+@dataclass
 class Composition:
     substance_code: int
     substance_name: str
@@ -20,12 +24,14 @@ class Composition:
     sa_ft_num: str
 
 
+@dataclass
 class SecurityInformations:
     start_date: str
     end_date: str
     text: str
 
 
+@dataclass
 class Availbility:
     code_statut: int
     statut: str
@@ -35,6 +41,7 @@ class Availbility:
     informations_link: str
 
 
+@dataclass
 class SalesInfos:
     administrative_status: str
     holder: str
@@ -51,6 +58,7 @@ class SalesInfos:
     full_price: float
 
 
+@dataclass
 class GenericGroup:
     generic_group_id: int
     generic_group_name: str

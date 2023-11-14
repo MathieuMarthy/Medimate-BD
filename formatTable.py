@@ -12,11 +12,12 @@ from classes.asmr_bdpm import Asmr
 from classes.info_importantes import Info
 from classes.lienpageCT_bdpm import Lienpage
 from classes.smr_bdpm import Smr
+from classes.table import Table
 from mongo.collection.collection import Collection
 from mongo.collection.medicineTypes import MedicineTypes
-from mongo.collection.medicines import Medicines
+from mongo.collection.medicine_data import *
+from mongo.collection.medicines import Medicines, Medicine
 from unidecode import unidecode
-
 
 
 class TableFormat:
@@ -80,14 +81,41 @@ class TableFormat:
         medicines = Medicines()
 
         # collection medicine
-        for line in self.Bdpm.df["Dénomination du médicament"]:
-            m_name, m_weight = self._get_medicine_weight(line)
-            m_type, m_true_type = self._get_generic_type(line)
+        for code_cis in self.Bdpm.df["Code CIS"]:
+            medicine: Medicine
+
+            # Type
+            bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
+            title = bdpm["Dénomination du médicament"]
+
+            m_name, m_weight = self._get_medicine_weight(title)
+            m_type, m_true_type = self._get_generic_type(title)
 
             medicine = medicines.get_or_add_medicine(m_name)
-            medicine.add_type_weight(m_type, m_weight, m_true_type)
+            medicine.set_type(Type(m_type, m_weight, m_true_type))
+
+            # Usage
+            medicine.set_usage(Usage())
+
+            # Composition
+            medicine.set_composition(Composition())
+
+            # SecurityInformations
+            medicine.set_security_informations(SecurityInformations())
+
+            # Availbility
+            medicine.set_availability(Availbility())
+
+            # SalesInfos
+            medicine.set_sales_info(SalesInfos())
+
+            # GenericGroup
+            medicine.set_generic_group(GenericGroup())
 
         return [medicines]
+
+    def _get_line_by_cis(self, table: Table, code_cis: int):
+        return table.df.loc[table.df["Code CIS"] == code_cis]
 
     def _get_medicine_weight(self, medicine_name: str):
         name_weight = medicine_name.split(",")[0]

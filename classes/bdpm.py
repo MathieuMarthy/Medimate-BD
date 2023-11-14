@@ -33,7 +33,3 @@ class Bdpm(Table):
         # ["Code CIS", "Dénomination du médicament", "Forme pharmaceutique",
         #        "Voies d"administration", "Statut administratif de l’AMM",
         #        "Titulaire(s)", "Surveillance renforcée (triangle noir) Oui/Non"]
-
-        for libelle, occu in self.df["Forme pharmaceutique"].value_counts().items():
-            if "capsule" in libelle:
-                print(libelle, occu)

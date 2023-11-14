@@ -1,6 +1,7 @@
 import logging
 import re
-from typing import Tuple
+import time
+from typing import Tuple, Optional
 
 import pandas as pd
 from classes.bdpm import Bdpm
@@ -49,6 +50,7 @@ class TableFormat:
         """Format all the tables"""
 
         logging.info("formating tables")
+        start = time.time()
         for table in self.tables:
             table.format()
 
@@ -56,6 +58,7 @@ class TableFormat:
             self._format_code_cis()
         except Exception as e:
             logging.error("error while formating tables", exc_info=True)
+        logging.info(f"formating tables done in {time.time() - start} seconds")
 
     def _format_code_cis(self):
         """Keep only the CIS Codes which are in all the tables"""
@@ -78,46 +81,136 @@ class TableFormat:
             print(table)
 
     def get_mongo_collections(self) -> list[Collection]:
+        start = time.time()
         medicines = Medicines()
 
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
             medicine: Medicine
 
-            # Type
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
-            title = bdpm["Dénomination du médicament"][0]
+            cip = self._get_line_by_cis(self.Cip, code_cis)
+            compo = self._get_line_by_cis(self.Compo, code_cis)
+            cpd = self._get_line_by_cis(self.Cpd, code_cis)
+            gener = self._get_line_by_cis(self.Gener, code_cis)
+            asmr = self._get_line_by_cis(self.Asmr, code_cis)
+            smr = self._get_line_by_cis(self.Smr, code_cis)
+            info = self._get_line_by_cis(self.Info, code_cis)
 
+            lienpage: Optional[pd.DataFrame] = None
+            has = self._get_value(asmr, "Code de dossier HAS")
+            if has is not None:
+                lienpage = self.Lienpage.df.loc[
+                    self.Lienpage.df["Code de dossier HAS"] == has
+                ]
+
+            # == Type
+            title = self._get_value(bdpm, "Dénomination du médicament")
             m_name, m_weight = self._get_medicine_weight(title)
-            m_type, m_true_type = self._get_generic_type(title)
+
+            type_wording = self._get_value(compo, "Désignation de l'élément pharmaceutique")
+            if type_wording is None:
+                type_wording = title
+
+            m_type, m_true_type = self._get_generic_type(type_wording)
 
             medicine = medicines.get_or_add_medicine(m_name)
-            medicine.set_type(Type(m_type, m_weight, m_true_type))
+            medicine.set_type(
+                Type(
+                    m_type,
+                    m_true_type,
+                    m_weight
+                )
+            )
 
-            # Usage
-            medicine.set_usage(Usage())
+            # == Usage
+            medicine.set_usage(
+                Usage(
+                    self._get_value(bdpm, "Voies d'administration"),
+                    self._get_value(cip, "Condition de prescription ou de délivrance")
+                )
+            )
 
-            # Composition
-            medicine.set_composition(Composition())
+            # == Composition
+            continue
+            medicine.set_composition(
+                Composition(
 
-            # SecurityInformations
-            medicine.set_security_informations(SecurityInformations())
+                )
+            )
 
-            # Availbility
-            medicine.set_availability(Availbility())
+            # == SecurityInformations
+            medicine.set_security_informations(
+                SecurityInformations(
 
-            # SalesInfos
-            medicine.set_sales_info(SalesInfos())
+                )
+            )
 
-            # GenericGroup
-            medicine.set_generic_group(GenericGroup())
+            # == Availbility
+            medicine.set_availability(
+                Availbility(
 
+                )
+            )
+
+            # == SalesInfos
+            medicine.set_sales_info(
+                SalesInfos(
+
+                )
+            )
+
+            # == GenericGroup
+            medicine.set_generic_group(
+                GenericGroup(
+
+                )
+            )
+
+        logging.info(f"get mongo collections done in {time.time() - start} seconds")
         return [medicines]
 
     def _get_line_by_cis(self, table: Table, code_cis: int) -> pd.DataFrame:
+        """Get the line of a table by CIS Code
+
+        Args:
+            table: the table
+            code_cis: the CIS Code
+
+        Returns:
+            pd.DataFrame: the line of the table
+        """
         return table.df.loc[table.df["Code CIS"] == code_cis]
 
-    def _get_medicine_weight(self, medicine_name: str):
+    def _get_value(self, df: pd.DataFrame, column: str) -> Optional[str]:
+        """Get the value of a column
+
+        Args:
+            df: the dataframe
+            column: the column
+
+        Returns:
+            str | None: the value of the column or None
+        """
+        try:
+            if df[column].empty:
+                return None
+            data_list = df[column].iloc
+            return data_list[0]
+        except KeyError:
+            return None
+
+
+    def _get_medicine_weight(self, medicine_name: str) -> Tuple[str, Optional[str]]:
+        """Get the weight of a medicine
+
+        Args:
+            medicine_name: the name of the medicine
+
+        Returns:
+            str: the name of the medicine
+            str | None: the weight of the medicine or None
+        """
         name_weight = medicine_name.split(",")[0]
 
         # find the first digit
@@ -130,10 +223,15 @@ class TableFormat:
         return name_weight[:digit_index.start()].strip(), name_weight[digit_index.start():].strip()
 
     def _get_generic_type(self, string: str) -> Tuple[str, str]:
+        """Get the generic type of a medicine
 
-        # solution injectable
-        # perfusion
-        # effervescent
+        Args:
+            string: the string to analyse
+
+        Returns:
+            str: the category of the medicine
+            str: the full type string
+        """
         string = string.split(",")[-1]
         string = unidecode(string.strip().lower())
 

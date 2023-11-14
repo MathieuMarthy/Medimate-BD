@@ -3,10 +3,18 @@
 class MedicineTypes:
     types = [
         "comprime",
-        "sachet",
+        "solution",
+        "poudre",
         "gelule",
-        "capsule",
-        "pommade",
+        "granules",
         "solution buvable",
-        "poudre"
+        "pommade",
+        "emulsion",
+        "granules",
+        "collyre",
+        "pastille"
+        "creme",
+        "gel",
+        "sirop",
+        "suppositoire"
      ]

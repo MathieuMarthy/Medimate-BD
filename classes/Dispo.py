@@ -16,7 +16,8 @@ class Dispo(Table):
 
     def format(self):
         columns_to_delete = [
-
+            "Code CIP7"
         ]
 
         self.df.drop(columns_to_delete, axis=1, inplace=True)
+        # TODO: vérifier si les lignes sont uniques

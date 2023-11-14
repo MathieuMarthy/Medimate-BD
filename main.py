@@ -24,6 +24,7 @@ for url in urls:
 tableFormat = TableFormat()
 tableFormat.format_tables()
 
+
 # == Transform into mongo collections == #
 collections = tableFormat.get_mongo_collections()
 

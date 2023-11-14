@@ -4,6 +4,8 @@ import time
 from typing import Tuple, Optional, Type, Union
 
 import pandas as pd
+import uwutilities as uwu
+
 from classes.bdpm import Bdpm
 from classes.cip_bdpm import Cip
 from classes.compo_bdpm import Compo
@@ -14,11 +16,11 @@ from classes.info_importantes import Info
 from classes.lienpageCT_bdpm import Lienpage
 from classes.smr_bdpm import Smr
 from classes.table import Table
-from mongo.collection.collection import Collection
 from mongo.collection.medicineTypes import MedicineTypes
 from mongo.collection.medicine_data import *
 from mongo.collection.medicines import Medicines, Medicine
 from unidecode import unidecode
+
 
 
 class TableFormat:
@@ -80,12 +82,14 @@ class TableFormat:
         for table in self.tables:
             print(table)
 
-    def get_mongo_collections(self) -> Medicines:
+    def get_medicines(self) -> Medicines:
         start = time.time()
         medicines = Medicines()
 
+        bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
+            bar.next()
             medicine: Medicine
 
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
@@ -142,6 +146,7 @@ class TableFormat:
                     self._get_value(compo, "Numéro de liaison SA/FT"),
                 )
             )
+            continue
 
             # == SecurityInformations
             medicine.set_security_informations(
@@ -171,6 +176,7 @@ class TableFormat:
                 )
             )
 
+        bar.stop()
         logging.info(f"get mongo collections done in {time.time() - start} seconds")
         return medicines
 

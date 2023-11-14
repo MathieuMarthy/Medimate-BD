@@ -86,7 +86,7 @@ class TableFormat:
 
             # Type
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
-            title = bdpm["Dénomination du médicament"]
+            title = bdpm["Dénomination du médicament"][0]
 
             m_name, m_weight = self._get_medicine_weight(title)
             m_type, m_true_type = self._get_generic_type(title)
@@ -114,7 +114,7 @@ class TableFormat:
 
         return [medicines]
 
-    def _get_line_by_cis(self, table: Table, code_cis: int):
+    def _get_line_by_cis(self, table: Table, code_cis: int) -> pd.DataFrame:
         return table.df.loc[table.df["Code CIS"] == code_cis]
 
     def _get_medicine_weight(self, medicine_name: str):

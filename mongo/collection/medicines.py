@@ -1,28 +1,54 @@
-import dataclasses
 from typing import Optional
-from dataclasses import dataclass
 
 from mongo.collection.collection import Collection
-
-
-@dataclass(frozen=True)
-class TypeWeight:
-    weight: str
-    true_name: str
+from mongo.collection.medicine_data import *
 
 
 class Medicine:
     name: str
-    type_weight: dict[str, list[TypeWeight]]
+    code_cis: str
+    code_has: str
+    type: Type
+    sales_info: SalesInfos
+    usage: Usage
+    composition: Composition
+    security_informations: SecurityInformations
+    availability: Availbility
+    generic_group: GenericGroup
 
     def __init__(self, name: str):
         self.name = name
         self.type_weight = {}
 
-    def add_type_weight(self, medicine_type: str, weight: str, true_type_name: str):
-        self.type_weight[medicine_type] = list(set(
-            self.type_weight.get(medicine_type, []) + [TypeWeight(weight, true_type_name)]
-        ))
+    def set_name(self, new: str):
+        self.name = new
+
+    def set_code_cis(self, new: str):
+        self.code_cis = new
+
+    def set_code_has(self, new: str):
+        self.code_has = new
+
+    def set_type(self, new: Type):
+        self.type = new
+
+    def set_sales_info(self, new: SalesInfos):
+        self.sales_info = new
+
+    def set_usage(self, new: Usage):
+        self.usage = new
+
+    def set_composition(self, new: Composition):
+        self.composition = new
+
+    def set_security_informations(self, new: SecurityInformations):
+        self.security_informations = new
+
+    def set_availability(self, new: Availbility):
+        self.availability = new
+
+    def set_generic_group(self, new: GenericGroup):
+        self.generic_group = new
 
     def __str__(self):
         return f"{self.name} - {self.type_weight}"

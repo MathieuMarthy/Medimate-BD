@@ -17,8 +17,8 @@ from classes.lienpageCT_bdpm import Lienpage
 from classes.smr_bdpm import Smr
 from classes.table import Table
 from mongo.collection.medicineTypes import MedicineTypes
-from mongo.collection.medicine_data import *
-from mongo.collection.medicines import Medicines, Medicine
+from mongo.collection.medicineData import *
+from mongo.collection.medicines import Medicines, Medicine, Groups
 from unidecode import unidecode
 
 
@@ -62,7 +62,7 @@ class TableFormat:
             logging.error("error while formating tables", exc_info=True)
         logging.info(f"formating tables done in {time.time() - start} seconds")
 
-    def _format_code_cis(self):
+    def _format_code_cis(self) -> Groups:
         """Keep only the CIS Codes which are in all the tables"""
 
         tmp_tables = [table for table in self.tables if table not in [self.Bdpm, self.Lienpage]]
@@ -84,7 +84,7 @@ class TableFormat:
 
     def get_medicines(self) -> Medicines:
         start = time.time()
-        medicines = Medicines()
+        groups = Groups()
 
         bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
@@ -108,7 +108,6 @@ class TableFormat:
                     self.Lienpage.df["Code de dossier HAS"] == has
                 ]
 
-            # == Type
             title = self._get_value(bdpm, "Dénomination du médicament")
             m_name, m_weight = self._get_medicine_weight(title)
 
@@ -118,7 +117,8 @@ class TableFormat:
 
             m_type, m_true_type = self._get_generic_type(type_wording)
 
-            medicine = medicines.get_or_add_medicine(m_name)
+            # == Type
+            medicine = Medicine(m_name)
             medicine.set_type(
                 MType(
                     m_type,
@@ -146,39 +146,41 @@ class TableFormat:
                     self._get_value(compo, "Numéro de liaison SA/FT"),
                 )
             )
-            continue
 
             # == SecurityInformations
             medicine.set_security_informations(
                 SecurityInformations(
-
+                    self._get_value(info, "Date de début de l’information"),
+                    self._get_value(info, "Date de fin de l’information de sécurité"),
+                    self._get_value(info, "Texte à afficher et lien vers l’information de sécurité")
                 )
             )
 
             # == Availbility
-            medicine.set_availability(
-                Availbility(
-
-                )
-            )
+            # medicine.set_availability(
+            #     Availbility(
+            #
+            #     )
+            # )
 
             # == SalesInfos
-            medicine.set_sales_info(
-                SalesInfos(
-
-                )
-            )
+            # medicine.set_sales_info(
+            #     SalesInfos(
+            #
+            #     )
+            # )
 
             # == GenericGroup
-            medicine.set_generic_group(
-                GenericGroup(
+            # medicine.set_generic_group(
+            #     GenericGroup(
+            #
+            #     )
+            # )
 
-                )
-            )
+            groups.add_medicine_into_group(medicine)
 
-        bar.stop()
         logging.info(f"get mongo collections done in {time.time() - start} seconds")
-        return medicines
+        return groups
 
     def _transform_in(self, object: Union[str, int, None], type: Type) -> Union[str, int, None]:
         """Transform an object in a type

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from mongo.collection.medicine_data import *
+from mongo.collection.medicineData import *
 
 
 class Medicine:
@@ -17,7 +17,6 @@ class Medicine:
 
     def __init__(self, name: str):
         self.name = name
-        self.type_weight = {}
 
     def set_name(self, new: str):
         self.name = new
@@ -54,26 +53,47 @@ class Medicine:
 
 
 class Medicines:
+    name: str
     medicines: list[Medicine] = []
 
-    def _get_medicine_by_name(self, name) -> Optional[Medicine]:
+    def __init__(self, name):
+        self.name = name
+
+    def add_medicine(self, medicine: Medicine):
+        self.medicines.append(medicine)
+
+    def get_medicine(self, code_cis: str) -> Optional[Medicine]:
         for medicine in self.medicines:
-            if medicine.name == name:
+            if medicine.code_cis == code_cis:
                 return medicine
+
         return None
 
-    def get_or_add_medicine(self, medicine_name: str) -> Medicine:
-        medicine = self._get_medicine_by_name(medicine_name)
+    def get_medicines(self) -> list[Medicine]:
+        return self.medicines
 
-        if not medicine:
-            medicine = Medicine(medicine_name)
-            self.medicines.append(medicine)
 
-        return medicine
+class Groups:
+    list_medicines: list[Medicines]
 
-    def get_medicine(self, medicine_name: str) -> Optional[Medicine]:
-        for medicine in self.medicines:
-            if medicine.name == medicine_name.upper():
+    def add(self, medicines: Medicines):
+        self.list_medicines.append(medicines)
+
+    def add_medicine_into_group(self, medicine_to_add: Medicine):
+        for medicines in self.list_medicines:
+            if medicines.name == medicine_to_add.name:
+                medicines.add_medicine(medicine_to_add)
+                return
+
+        medicines = Medicines(medicine_to_add.name)
+        medicines.add_medicine(medicine_to_add)
+        self.list_medicines.append(medicines)
+
+    def get_medicine_by_cis(self, code_cis: str) -> Optional[Medicine]:
+        for medicines in self.list_medicines:
+
+            medicine = medicines.get_medicine(code_cis)
+            if medicine is not None:
                 return medicine
 
         return None

@@ -6,6 +6,7 @@ from typing import Tuple, Optional, Type, Union
 import pandas as pd
 import uwutilities as uwu
 
+from classes.dispo import Dispo
 from classes.bdpm import Bdpm
 from classes.cip_bdpm import Cip
 from classes.compo_bdpm import Compo
@@ -29,6 +30,7 @@ class TableFormat:
         self.Bdpm = Bdpm()
         self.Cip = Cip()
         self.Compo = Compo()
+        self.Dispo = Dispo()
         self.Cpd = Cpd()
         self.Gener = Gener()
         self.Asmr = Asmr()
@@ -95,6 +97,7 @@ class TableFormat:
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
             cip = self._get_line_by_cis(self.Cip, code_cis)
             compo = self._get_line_by_cis(self.Compo, code_cis)
+            dispo = self._get_line_by_cis(self.Dispo, code_cis)
             cpd = self._get_line_by_cis(self.Cpd, code_cis)
             gener = self._get_line_by_cis(self.Gener, code_cis)
             asmr = self._get_line_by_cis(self.Asmr, code_cis)
@@ -128,10 +131,14 @@ class TableFormat:
             )
 
             # == Usage
+            link_help = None
+            if lienpage:
+                link_help = self._get_value(lienpage, "Lien vers les pages d’avis de la CT")
             medicine.set_usage(
                 Usage(
                     self._get_value(bdpm, "Voies d'administration"),
-                    self._get_value(cip, "Condition de prescription ou de délivrance")
+                    self._get_value(cip, "Condition de prescription ou de délivrance"),
+                    link_help
                 )
             )
 
@@ -146,33 +153,54 @@ class TableFormat:
                     self._get_value(compo, "Numéro de liaison SA/FT"),
                 )
             )
-            continue
 
             # == SecurityInformations
             medicine.set_security_informations(
                 SecurityInformations(
-
+                    self._get_value(info, "Date de début de l’information"),
+                    self._get_value(info, "Date de fin de l’information de sécurité"),
+                    self._get_value(info, "Texte à afficher et lien vers l’information de sécurité")
                 )
             )
 
             # == Availbility
             medicine.set_availability(
                 Availbility(
-
+                    self._transform_in(self._get_value(dispo, "CodeStatut"), int),
+                    self._get_value(dispo, "Statut"),
+                    self._get_value(dispo, "DateDebut"),
+                    self._get_value(dispo, "DateMiseAJour"),
+                    self._get_value(dispo, "DateRemiseDispo"),
+                    self._get_value(dispo, "Lien vers la page du site ANSM"),
                 )
             )
 
             # == SalesInfos
             medicine.set_sales_info(
                 SalesInfos(
-
+                    self._get_value(bdpm, "Statut administratif de(s) la présentation(s)"),
+                    self._get_value(bdpm, "Titulaire(s)"),
+                    self._get_value(bdpm, "Surveillance renforcée (triangle noir) Oui/Non", Bdpm.get_surveillance),
+                    self._get_value(cip, "Code CIP7"),
+                    self._get_value(cip, "Code CIP13"),
+                    self._get_value(cip, "Libellé de la présentation"),
+                    self._get_value(cip, "Statut administratif de la présentation"),
+                    self._get_value(cip, "Etat de commercialisation", Cip.get_is_on_sale),
+                    self._get_value(cip, "Date de la déclaration de commercialisation"),
+                    self._get_value(cip, "Taux de remboursement"),
+                    self._get_value(cip, "Conditions de remboursement"),
+                    self._transform_in(self._get_value(cip, "Prix sans honoraire"), float),
+                    self._transform_in(self._get_value(cip, "Prix"), float),
                 )
             )
 
             # == GenericGroup
             medicine.set_generic_group(
                 GenericGroup(
-
+                    self._transform_in(self._get_value(gener, "Identifiant du groupe générique"), int),
+                    self._get_value(gener, "Libellé du groupe générique"),
+                    self._get_value(gener, "Type de générique"),
+                    self._transform_in(self._get_value(gener, "Numéro de tri"), int),
                 )
             )
 
@@ -208,21 +236,24 @@ class TableFormat:
         """
         return table.df.loc[table.df["Code CIS"] == code_cis]
 
-    def _get_value(self, df: pd.DataFrame, column: str) -> Optional[str]:
+    def _get_value(self, df: pd.DataFrame, column: str, apply_after_extract: Optional[callable] = None) -> any:
         """Get the value of a column
 
         Args:
             df: the dataframe
             column: the column
+            apply_after_extract: a function to apply after the extract
 
         Returns:
-            str | None: the value of the column or None
+            any: the value of the column or None
         """
         try:
+            if apply_after_extract:
+                return apply_after_extract(df[column].iloc[0])
+
             if df[column].empty:
                 return None
-            data_list = df[column].iloc
-            return data_list[0]
+            return df[column].iloc[0]
         except KeyError:
             return None
 

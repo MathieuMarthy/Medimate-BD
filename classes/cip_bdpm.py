@@ -1,3 +1,5 @@
+from typing import Optional
+
 from classes.table import Table
 
 
@@ -27,3 +29,16 @@ class Cip(Table):
 
         self.date_format = "%d/%m/%Y"
         self.apply_func_to_col("Date de la déclaration de commercialisation", self.convert_date)
+
+    @staticmethod
+    def get_is_on_sale(string: Optional[str]) -> bool:
+        if string:
+            return string == "Déclaration de commercialisation"
+        return False
+
+
+    @staticmethod
+    def get_refund_rate(string: Optional[str]) -> Optional[int]:
+        if string:
+            return int(string.replace("%", "").strip())
+        return None

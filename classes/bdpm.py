@@ -1,3 +1,5 @@
+from typing import Optional
+
 from classes.table import Table
 
 
@@ -33,3 +35,10 @@ class Bdpm(Table):
         # ["Code CIS", "Dénomination du médicament", "Forme pharmaceutique",
         #        "Voies d"administration", "Statut administratif de l’AMM",
         #        "Titulaire(s)", "Surveillance renforcée (triangle noir) Oui/Non"]
+
+
+    @staticmethod
+    def get_surveillance(string: Optional[str]) -> bool:
+        if string:
+            return string.lower() == "oui"
+        return False

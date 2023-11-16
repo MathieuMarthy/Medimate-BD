@@ -12,6 +12,7 @@ class MType:
 class Usage:
     route_administration: str
     condition_prescription_delivery: str
+    link_help: str
 
 
 @dataclass
@@ -54,7 +55,7 @@ class SalesInfos:
     date_marketing_declaration: str
     refund_rate: int
     refund_conditions: str
-    price: float
+    price_no_tax: float
     full_price: float
 
 

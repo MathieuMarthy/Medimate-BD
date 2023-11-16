@@ -84,14 +84,14 @@ class TableFormat:
         for table in self.tables:
             print(table)
 
-    def get_medicines(self) -> Medicines:
+    def get_medicines(self) -> Groups:
         start = time.time()
         groups = Groups()
 
-        bar = uwu.Bar(self.Bdpm.df.shape[0])
+        # bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
-            bar.next()
+            # bar.next()
             medicine: Medicine
 
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
@@ -132,7 +132,7 @@ class TableFormat:
 
             # == Usage
             link_help = None
-            if lienpage:
+            if lienpage is not None:
                 link_help = self._get_value(lienpage, "Lien vers les pages d’avis de la CT")
             medicine.set_usage(
                 Usage(
@@ -141,6 +141,11 @@ class TableFormat:
                     link_help
                 )
             )
+
+            # == Codes
+            medicine.set_code_cis(code_cis)
+            if has is not None:
+                medicine.set_code_has(has)
 
             # == Composition
             medicine.set_composition(
@@ -204,8 +209,10 @@ class TableFormat:
                 )
             )
 
-        bar.stop()
-        logging.info(f"get mongo collections done in {time.time() - start} seconds")
+            groups.add_medicine_into_group(medicine)
+        # bar.stop()
+
+        logging.info(f"data restructuring took 10 {time.time() - start} seconds")
         return groups
 
     def _transform_in(self, object: Union[str, int, None], type: Type) -> Union[str, int, None]:
@@ -248,11 +255,12 @@ class TableFormat:
             any: the value of the column or None
         """
         try:
+            if df[column].empty:
+                return None
+
             if apply_after_extract:
                 return apply_after_extract(df[column].iloc[0])
 
-            if df[column].empty:
-                return None
             return df[column].iloc[0]
         except KeyError:
             return None

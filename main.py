@@ -9,6 +9,7 @@ logging.basicConfig(filename="log.txt",
                     filemode="a",
                     format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
                     datefmt="%H:%M:%S",
+                    encoding="utf-8",
                     level=logging.INFO)
 
 # == Scrap == #
@@ -26,6 +27,6 @@ tableFormat.format_tables()
 
 
 # == Transform into mongo collection == #
-# groups = tableFormat.get_medicines()
-#
-# print(groups.get_medicine("doliprane"))
+groups = tableFormat.get_medicines()
+
+print(groups.get_one_medicines("salut"))

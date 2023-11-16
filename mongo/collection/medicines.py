@@ -49,7 +49,7 @@ class Medicine:
         self.generic_group = new
 
     def __str__(self):
-        return f"{self.name} - {self.type_weight}"
+        return f"{self.name} - {self.code_cis}: {self.type}"
 
 
 class Medicines:
@@ -73,8 +73,15 @@ class Medicines:
         return self.medicines
 
 
+    def __str__(self):
+        return f"{self.name}: {len(self.medicines)}"
+
+
 class Groups:
     list_medicines: list[Medicines]
+
+    def __init__(self):
+        self.list_medicines = []
 
     def add(self, medicines: Medicines):
         self.list_medicines.append(medicines)
@@ -85,15 +92,24 @@ class Groups:
                 medicines.add_medicine(medicine_to_add)
                 return
 
-        medicines = Medicines(medicine_to_add.name)
-        medicines.add_medicine(medicine_to_add)
-        self.list_medicines.append(medicines)
+        new_medicines = Medicines(medicine_to_add.name)
+        new_medicines.add_medicine(medicine_to_add)
+        self.list_medicines.append(new_medicines)
 
-    def get_medicine_by_cis(self, code_cis: str) -> Optional[Medicine]:
+    def get_one_medicine_by_cis(self, code_cis: str) -> Optional[Medicine]:
         for medicines in self.list_medicines:
 
             medicine = medicines.get_medicine(code_cis)
             if medicine is not None:
                 return medicine
+
+        return None
+
+
+    def get_one_medicines(self, name: str) -> Optional[Medicines]:
+        name = name.upper()
+        for medicines in self.list_medicines:
+            if medicines.name == name:
+                return medicines
 
         return None

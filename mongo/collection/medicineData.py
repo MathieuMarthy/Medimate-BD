@@ -1,22 +1,29 @@
 from dataclasses import dataclass
+from typing import Optional
+
+
+class Serializable:
+
+    def to_json(self) -> Optional[dict]:
+        return self.__dict__
 
 
 @dataclass
-class MType:
+class MType(Serializable):
     generic: str
     complet: str
     weight: str
 
 
 @dataclass
-class Usage:
+class Usage(Serializable):
     route_administration: str
     condition_prescription_delivery: str
     link_help: str
 
 
 @dataclass
-class Composition:
+class Composition(Serializable):
     substance_code: int
     substance_name: str
     substance_dosage: str
@@ -26,14 +33,14 @@ class Composition:
 
 
 @dataclass
-class SecurityInformations:
+class SecurityInformations(Serializable):
     start_date: str
     end_date: str
     text: str
 
 
 @dataclass
-class Availbility:
+class Availbility(Serializable):
     code_statut: int
     statut: str
     start_date: str
@@ -43,7 +50,7 @@ class Availbility:
 
 
 @dataclass
-class SalesInfos:
+class SalesInfos(Serializable):
     administrative_status: str
     holder: str
     surveillance: bool
@@ -60,7 +67,7 @@ class SalesInfos:
 
 
 @dataclass
-class GenericGroup:
+class GenericGroup(Serializable):
     generic_group_id: int
     generic_group_name: str
     generic_type: str

@@ -36,7 +36,6 @@ class Cip(Table):
             return string == "Déclaration de commercialisation"
         return False
 
-
     @staticmethod
     def get_refund_rate(string: Optional[str]) -> Optional[int]:
         if string:

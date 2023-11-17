@@ -4,6 +4,8 @@ class MedicineTypes:
     types = [
         "comprime",
         "solution",
+        "capsule",
+        "suspension",
         "poudre",
         "gelule",
         "granules",

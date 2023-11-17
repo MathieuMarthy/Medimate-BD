@@ -5,6 +5,7 @@ from typing import Tuple, Optional, Type, Union
 
 import pandas as pd
 import uwutilities as uwu
+from numpy import int64, NaN, nan, NAN
 
 from classes.dispo import Dispo
 from classes.bdpm import Bdpm
@@ -19,9 +20,8 @@ from classes.smr_bdpm import Smr
 from classes.table import Table
 from mongo.collection.medicineTypes import MedicineTypes
 from mongo.collection.medicineData import *
-from mongo.collection.medicines import Medicines, Medicine, Groups
+from mongo.collection.medicines import Medicine, Groups
 from unidecode import unidecode
-
 
 
 class TableFormat:
@@ -34,7 +34,7 @@ class TableFormat:
         self.Cpd = Cpd()
         self.Gener = Gener()
         self.Asmr = Asmr()
-        self.Smr = Smr()
+        # self.Smr = Smr()
         self.Info = Info()
         self.Lienpage = Lienpage()
 
@@ -45,7 +45,6 @@ class TableFormat:
             self.Cpd,
             self.Gener,
             self.Asmr,
-            self.Smr,
             self.Info,
             self.Lienpage
         ]
@@ -60,11 +59,11 @@ class TableFormat:
 
         try:
             self._format_code_cis()
-        except Exception as e:
+        except Exception:
             logging.error("error while formating tables", exc_info=True)
         logging.info(f"formating tables done in {time.time() - start} seconds")
 
-    def _format_code_cis(self) -> Groups:
+    def _format_code_cis(self):
         """Keep only the CIS Codes which are in all the tables"""
 
         tmp_tables = [table for table in self.tables if table not in [self.Bdpm, self.Lienpage]]
@@ -76,9 +75,9 @@ class TableFormat:
         # We do the opposite, the CIS Codes which are only in Bdpm are deleted
         df_codes_cis = [table.df["Code CIS"] for table in tmp_tables]
 
-        all_CIS = pd.concat(df_codes_cis)
-        all_CIS = all_CIS.drop_duplicates()
-        self.Bdpm.df = self.Bdpm.df[self.Bdpm.df["Code CIS"].isin(all_CIS)]
+        all_cis = pd.concat(df_codes_cis)
+        all_cis = all_cis.drop_duplicates()
+        self.Bdpm.df = self.Bdpm.df[self.Bdpm.df["Code CIS"].isin(all_cis)]
 
     def print_tables(self):
         for table in self.tables:
@@ -88,20 +87,19 @@ class TableFormat:
         start = time.time()
         groups = Groups()
 
-        # bar = uwu.Bar(self.Bdpm.df.shape[0])
+        bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
-            # bar.next()
+            bar.next()
             medicine: Medicine
 
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
             cip = self._get_line_by_cis(self.Cip, code_cis)
             compo = self._get_line_by_cis(self.Compo, code_cis)
             dispo = self._get_line_by_cis(self.Dispo, code_cis)
-            cpd = self._get_line_by_cis(self.Cpd, code_cis)
+            cpd = self._get_line_by_cis(self.Cpd, code_cis)  # TODO
             gener = self._get_line_by_cis(self.Gener, code_cis)
             asmr = self._get_line_by_cis(self.Asmr, code_cis)
-            smr = self._get_line_by_cis(self.Smr, code_cis)
             info = self._get_line_by_cis(self.Info, code_cis)
 
             lienpage: Optional[pd.DataFrame] = None
@@ -109,7 +107,7 @@ class TableFormat:
             if has is not None:
                 lienpage = self.Lienpage.df.loc[
                     self.Lienpage.df["Code de dossier HAS"] == has
-                ]
+                    ]
 
             title = self._get_value(bdpm, "Dénomination du médicament")
             m_name, m_weight = self._get_medicine_weight(title)
@@ -186,13 +184,13 @@ class TableFormat:
                     self._get_value(bdpm, "Statut administratif de(s) la présentation(s)"),
                     self._get_value(bdpm, "Titulaire(s)"),
                     self._get_value(bdpm, "Surveillance renforcée (triangle noir) Oui/Non", Bdpm.get_surveillance),
-                    self._get_value(cip, "Code CIP7"),
-                    self._get_value(cip, "Code CIP13"),
+                    self._transform_in(self._get_value(cip, "Code CIP7"), int),
+                    self._transform_in(self._get_value(cip, "Code CIP13"), int),
                     self._get_value(cip, "Libellé de la présentation"),
                     self._get_value(cip, "Statut administratif de la présentation"),
                     self._get_value(cip, "Etat de commercialisation", Cip.get_is_on_sale),
                     self._get_value(cip, "Date de la déclaration de commercialisation"),
-                    self._get_value(cip, "Taux de remboursement"),
+                    self._get_value(cip, "Taux de remboursement", Cip.get_refund_rate),
                     self._get_value(cip, "Conditions de remboursement"),
                     self._transform_in(self._get_value(cip, "Prix sans honoraire"), float),
                     self._transform_in(self._get_value(cip, "Prix"), float),
@@ -210,23 +208,23 @@ class TableFormat:
             )
 
             groups.add_medicine_into_group(medicine)
-        # bar.stop()
+        bar.stop()
 
-        logging.info(f"data restructuring took 10 {time.time() - start} seconds")
+        logging.info(f"data restructuring took {time.time() - start} seconds")
         return groups
 
-    def _transform_in(self, object: Union[str, int, None], type: Type) -> Union[str, int, None]:
+    def _transform_in(self, object_to_transform: Union[str, int, None], target_type: Type) -> Union[str, int, None]:
         """Transform an object in a type
 
         Args:
-            object: the object to transform
-            type: the type to transform in
+            object_to_transform: the object to transform
+            target_type: the type to transform in
 
         Returns:
             str | int | None: the object transformed
         """
         try:
-            resultat = type(object)
+            resultat = target_type(object_to_transform)
             return resultat
         except (ValueError, TypeError):
             return None
@@ -258,13 +256,22 @@ class TableFormat:
             if df[column].empty:
                 return None
 
-            if apply_after_extract:
-                return apply_after_extract(df[column].iloc[0])
+            data = df[column].iloc[0]
+            if data in [nan, NaN, NAN]:
+                return None
 
-            return df[column].iloc[0]
+            if isinstance(data, int64):
+                data = int(data)
+
+            if isinstance(data, str):
+                data = data.strip()
+
+            if apply_after_extract:
+                return apply_after_extract(data)
+
+            return data
         except KeyError:
             return None
-
 
     def _get_medicine_weight(self, medicine_name: str) -> Tuple[str, Optional[str]]:
         """Get the weight of a medicine

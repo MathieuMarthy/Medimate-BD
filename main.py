@@ -28,5 +28,4 @@ tableFormat.format_tables()
 
 # == Transform into mongo collection == #
 groups = tableFormat.get_medicines()
-
-print(groups.get_one_medicines("salut"))
+groups.save_to_json("mongo/json/db.json")

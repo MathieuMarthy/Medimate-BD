@@ -13,12 +13,12 @@ logging.basicConfig(filename="log.txt",
                     level=logging.INFO)
 
 # == Scrap == #
-# scrapper = Scraper()
-# urls = scrapper.get_files_to_download()
-#
-# # == Download == #
-# for url in urls:
-#     scrapper.download_file(url)
+scrapper = Scraper()
+urls = scrapper.get_files_to_download()
+
+# == Download == #
+for url in urls:
+    scrapper.download_file(url)
 
 
 # == Format == #

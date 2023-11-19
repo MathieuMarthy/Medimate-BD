@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import datetime
-from typing import Union
+from typing import Union, Optional
 
 import pandas as pd
 from uwutilities import String_tools
@@ -38,7 +38,7 @@ class Table(ABC):
         """
         self.df[target] = self.df[target].apply(lambda row: func(row))
 
-    def convert_date(self, date_str: Union[int, str]) -> str:
+    def convert_date(self, date_str: Union[int, str]) -> Optional[str]:
         """Convert a date from a format to another
 
         Args:
@@ -48,8 +48,14 @@ class Table(ABC):
         Returns:
             str: the converted date
         """
-        date = datetime.strptime(str(date_str), self.date_format)
-        return date.strftime("%Y-%m-%d")
+        if date_str is None:
+            return None
+
+        try:
+            date = datetime.strptime(str(date_str), self.date_format)
+            return date.strftime("%Y-%m-%d")
+        except ValueError:
+            return None
 
     def __str__(self):
         return f"{self.__class__.__name__}: {self.df.shape[0]} élément{String_tools.singular_or_plural(self.df.shape[0])}"

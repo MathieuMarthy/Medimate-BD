@@ -8,7 +8,7 @@ class Dispo(Table):
     def __init__(self):
         super().__init__("CIS_CIP_Dispo_Spec.txt")
         self.colums_names = [
-            "Code CIS", "Code CIP7", "CodeStatut", "Statut" # TODO: les dates miseAJour et RemiseDispo sont fusionnées
+            "Code CIS", "Code CIP7", "CodeStatut", "Statut", # TODO: les dates miseAJour et RemiseDispo sont fusionnées
             "DateDebut", "DateRemiseDispo", # "DateMiseAJour"
             "Lien vers la page du site ANSM",
         ]

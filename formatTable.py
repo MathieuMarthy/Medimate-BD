@@ -97,7 +97,7 @@ class TableFormat:
             cip = self._get_line_by_cis(self.Cip, code_cis)
             compo = self._get_line_by_cis(self.Compo, code_cis)
             dispo = self._get_line_by_cis(self.Dispo, code_cis)
-            cpd = self._get_line_by_cis(self.Cpd, code_cis)  # TODO
+            cpd = self._get_line_by_cis(self.Cpd, code_cis)
             gener = self._get_line_by_cis(self.Gener, code_cis)
             asmr = self._get_line_by_cis(self.Asmr, code_cis)
             info = self._get_line_by_cis(self.Info, code_cis)
@@ -135,7 +135,7 @@ class TableFormat:
             medicine.set_usage(
                 Usage(
                     self._get_value(bdpm, "Voies d'administration"),
-                    self._get_value(cip, "Condition de prescription ou de délivrance"),
+                    self._get_value(cpd, "Condition de prescription ou de délivrance"),
                     link_help
                 )
             )

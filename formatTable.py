@@ -43,6 +43,7 @@ class TableFormat:
             self.Cip,
             self.Compo,
             self.Cpd,
+            self.Dispo,
             self.Gener,
             self.Asmr,
             self.Info,
@@ -87,10 +88,10 @@ class TableFormat:
         start = time.time()
         groups = Groups()
 
-        bar = uwu.Bar(self.Bdpm.df.shape[0])
+        # bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
-            bar.next()
+            # bar.next()
             medicine: Medicine
 
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
@@ -208,7 +209,7 @@ class TableFormat:
             )
 
             groups.add_medicine_into_group(medicine)
-        bar.stop()
+        # bar.stop()
 
         logging.info(f"data restructuring took {time.time() - start} seconds")
         return groups

@@ -7,6 +7,11 @@ class Serializable:
     def to_json(self) -> Optional[dict]:
         return self.__dict__
 
+    def is_empty(self) -> bool:
+        for value in self.__dict__.values():
+            if value is not None:
+                return False
+        return True
 
 @dataclass
 class MType(Serializable):

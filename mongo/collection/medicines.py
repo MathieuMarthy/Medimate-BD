@@ -59,7 +59,11 @@ class Medicine:
 
         for att, value in self.__dict__.items():
             if isinstance(value, Serializable):
-                data_json[att] = value.to_json()
+                if value.is_empty():
+                    data_json[att] = None
+                else:
+                    data_json[att] = value.to_json()
+
             else:
                 data_json[att] = value
 

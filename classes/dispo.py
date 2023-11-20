@@ -16,7 +16,7 @@ class Dispo(Table):
             "Lien vers la page du site ANSM",
         ]
 
-        self.open_csv()
+        self.open_csv(1)
 
     def format(self):
         columns_to_delete = [
@@ -41,7 +41,11 @@ class Dispo(Table):
         now = datetime.now()
         self.df = self.df[df["DateRemiseDispo"] >= now]
 
+
     def _split_date(self, date: str) -> Tuple[Optional[str], str]:
         if len(date) > 10:
             return date[:10], date[10:]
         return None, date
+
+
+

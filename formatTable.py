@@ -113,7 +113,7 @@ class TableFormat:
             title = self._get_value(bdpm, "Dénomination du médicament")
             m_name, m_weight = self._get_medicine_weight(title)
 
-            type_wording = self._get_value(compo, "Désignation de l'élément pharmaceutique")
+            type_wording = self._get_value(compo, "Désignation de lélément pharmaceutique")
             if type_wording is None:
                 type_wording = title
 
@@ -254,6 +254,7 @@ class TableFormat:
             any: the value of the column or None
         """
         try:
+
             if df[column].empty:
                 return None
 

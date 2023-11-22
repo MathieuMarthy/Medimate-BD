@@ -12,7 +12,7 @@ class Dispo(Table):
         super().__init__("CIS_CIP_Dispo_Spec.txt")
         self.colums_names = [
             "Code CIS", "Code CIP7", "CodeStatut", "Statut",  # TODO: les dates miseAJour et RemiseDispo sont fusionnées
-            "DateDebut", "DateRemiseDispo",  # "DateMiseAJour"
+            "DateDebut", "DateMiseAJour", "DateRemiseDispo",  #
             "Lien vers la page du site ANSM",
         ]
 
@@ -24,11 +24,6 @@ class Dispo(Table):
         ]
 
         self.df.drop(columns_to_delete, axis=1, inplace=True)
-
-        # seperation of "DateMiseAJour" and "DateRemiseDispo"
-        self.df["DateMiseAJour"], self.df["DateRemiseDispo"] = zip(
-            *self.df["DateRemiseDispo"].map(self._split_date)
-        )
 
         self.date_format = "%d/%m/%Y"
         for date in ["DateDebut", "DateMiseAJour", "DateRemiseDispo"]:

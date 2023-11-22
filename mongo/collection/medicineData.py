@@ -2,33 +2,22 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-class Serializable:
-
-    def to_json(self) -> Optional[dict]:
-        return self.__dict__
-
-    def is_empty(self) -> bool:
-        for value in self.__dict__.values():
-            if value is not None:
-                return False
-        return True
-
 @dataclass
-class MType(Serializable):
+class MType:
     generic: str
     complet: str
     weight: str
 
 
 @dataclass
-class Usage(Serializable):
+class Usage:
     route_administration: str
     condition_prescription_delivery: str
     link_help: str
 
 
 @dataclass
-class Composition(Serializable):
+class Composition:
     substance_code: int
     substance_name: str
     substance_dosage: str
@@ -38,14 +27,14 @@ class Composition(Serializable):
 
 
 @dataclass
-class SecurityInformations(Serializable):
+class SecurityInformations:
     start_date: str
     end_date: str
     text: str
 
 
 @dataclass
-class Availbility(Serializable):
+class Availbility:
     code_statut: int
     statut: str
     start_date: str
@@ -55,12 +44,12 @@ class Availbility(Serializable):
 
 
 @dataclass
-class SalesInfos(Serializable):
+class SalesInfos:
     administrative_status: str
     holder: str
     surveillance: bool
-    CIP7: str
-    CIP13: str
+    CIP7: int
+    CIP13: int
     presentation: str
     presentation_status: str
     is_on_sale: bool
@@ -72,7 +61,7 @@ class SalesInfos(Serializable):
 
 
 @dataclass
-class GenericGroup(Serializable):
+class GenericGroup:
     generic_group_id: int
     generic_group_name: str
     generic_type: str

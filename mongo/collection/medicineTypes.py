@@ -17,8 +17,8 @@ class MedicineTypes:
         "granules",
         "capsule",
         "sirop",
-        "suppositoire"
-        "pastille"
+        "suppositoire",
+        "pastille",
         "emulsion",
         "lyophilisat"
      ]

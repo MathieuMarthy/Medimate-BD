@@ -1,8 +1,6 @@
 from typing import Optional, Tuple
 from datetime import datetime
 
-import pandas as pd
-
 from classes.table import Table
 
 class Dispo(Table):
@@ -26,7 +24,7 @@ class Dispo(Table):
 
         self.df.dropna(inplace=True)
 
-        # seperation of "DateMiseAJour" and "DateRemiseDispo"
+        ## seperation of "DateMiseAJour" and "DateRemiseDispo"
         # self.df["DateMiseAJour"], self.df["DateRemiseDispo"] = zip(
         #     *self.df["DateRemiseDispo"].map(self._split_date)
         # )

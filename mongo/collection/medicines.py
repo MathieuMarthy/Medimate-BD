@@ -1,15 +1,15 @@
 import json
 import logging
 import numpy as np
-from typing import Optional
+from typing import Optional, Union
 
 from mongo.collection.medicineData import *
 
 
 class Medicine:
     name: str
-    code_cis: str
-    code_has: str
+    code_cis: int
+    code_has: Optional[int]
     type: MType
     sales_info: SalesInfos
     usage: Usage
@@ -20,14 +20,15 @@ class Medicine:
 
     def __init__(self, name: str):
         self.name = name
+        self.code_has = None
 
     def set_name(self, new: str):
         self.name = new
 
-    def set_code_cis(self, new: str):
+    def set_code_cis(self, new: int):
         self.code_cis = new
 
-    def set_code_has(self, new: str):
+    def set_code_has(self, new: int):
         self.code_has = new
 
     def set_type(self, new: MType):
@@ -59,7 +60,11 @@ class Medicine:
 
         for att, value in self.__dict__.items():
             if isinstance(value, Serializable):
-                data_json[att] = value.to_json()
+                if value.is_empty():
+                    data_json[att] = None
+                else:
+                    data_json[att] = value.to_json()
+
             else:
                 data_json[att] = value
 
@@ -87,28 +92,28 @@ class Medicines:
     def get_medicines(self) -> list[Medicine]:
         return self.medicines
 
-    def to_json(self) -> dict:
-        data_dict = {}
-        for medicine in self.medicines:
-            data_dict[medicine.code_cis] = medicine.to_json()
-
-        return data_dict
-
     def __str__(self):
         return f"{self.name}: {len(self.medicines)}"
 
 
 class Groups:
-    list_medicines: list[Medicines]
+    medicines: list[Medicines]
 
     def __init__(self):
-        self.list_medicines = []
+        self.medicines = []
+
+    def get_all_medicines(self) -> list[Medicine]:
+        all_medicines = []
+        for medicines in self.medicines:
+            all_medicines.extend(medicines.get_medicines())
+
+        return all_medicines
 
     def add(self, medicines: Medicines):
-        self.list_medicines.append(medicines)
+        self.medicines.append(medicines)
 
     def add_medicine_into_group(self, medicine_to_add: Medicine):
-        for medicines in self.list_medicines:
+        for medicines in self.medicines:
             if medicines.name == medicine_to_add.name:
                 medicines.add_medicine(medicine_to_add)
                 return
@@ -118,10 +123,10 @@ class Groups:
     def _create_new_medicines(self, medicine: Medicine):
         new_medicines = Medicines(medicine.name)
         new_medicines.add_medicine(medicine)
-        self.list_medicines.append(new_medicines)
+        self.medicines.append(new_medicines)
 
     def get_one_medicine_by_cis(self, code_cis: str) -> Optional[Medicine]:
-        for medicines in self.list_medicines:
+        for medicines in self.medicines:
 
             medicine = medicines.get_medicine(code_cis)
             if medicine is not None:
@@ -131,22 +136,21 @@ class Groups:
 
     def get_one_medicines(self, name: str) -> Optional[Medicines]:
         name = name.upper()
-        for medicines in self.list_medicines:
+        for medicines in self.medicines:
             if medicines.name == name:
                 return medicines
 
         return None
 
-    def to_json(self) -> dict:
-        data_json = {}
-
-        for medicines in self.list_medicines:
-            data_json[medicines.name] = medicines.to_json()
-
-        return data_json
-
     def save_to_json(self, filepath: str):
         try:
-            json.dump(self.to_json(), open(filepath, "w", encoding="utf-8"), indent=4)
+            json.dump(self, open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, '__dict__', str(o)))
+        except Exception:
+            logging.error("error while trying save groups", exc_info=True)
+
+
+    def save_to_json_flat_data(self, filepath: str):
+        try:
+            json.dump(self.get_all_medicines(), open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, '__dict__', str(o)))
         except Exception:
             logging.error("error while trying save groups", exc_info=True)

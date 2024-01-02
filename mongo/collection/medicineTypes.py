@@ -3,20 +3,22 @@
 class MedicineTypes:
     types = [
         "comprime",
+        "solution buvable",
         "solution",
-        "capsule",
-        "suspension",
-        "poudre",
         "gelule",
         "granules",
-        "solution buvable",
         "pommade",
-        "emulsion",
-        "granules",
+        "poudre",
+        "capsule",
+        "suspension",
         "collyre",
-        "pastille"
         "creme",
         "gel",
+        "granules",
+        "capsule",
         "sirop",
-        "suppositoire"
+        "suppositoire",
+        "pastille",
+        "emulsion",
+        "lyophilisat"
      ]

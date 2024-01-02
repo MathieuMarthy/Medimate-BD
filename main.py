@@ -28,4 +28,5 @@ tableFormat.format_tables()
 
 # == Transform into mongo collection == #
 groups = tableFormat.get_medicines()
-groups.save_to_json("mongo/json/db.json")
+groups.save_to_json("mongo/json/medicines.json")
+groups.save_to_json_flat_data("mongo/json/medicines_flat.json")

@@ -17,9 +17,9 @@ class Table(ABC):
         self.encoding = "latin-1"
         self.file_name = file_name
 
-    def open_csv(self):
+    def open_csv(self, skip_rows: int = 0):
         """Open csv file and save it in a pandas dataframe"""
-        self.df = pd.read_csv(f"csv/{self.file_name}", sep="\t", encoding=self.encoding, names=self.colums_names)
+        self.df = pd.read_csv(f"csv/{self.file_name}", sep="\t", encoding=self.encoding, names=self.colums_names, skiprows=skip_rows)
 
     def format(self):
         """Format the dataframe"""

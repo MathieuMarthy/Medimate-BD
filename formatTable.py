@@ -88,10 +88,10 @@ class TableFormat:
         start = time.time()
         groups = Groups()
 
-        # bar = uwu.Bar(self.Bdpm.df.shape[0])
+        bar = uwu.Bar(self.Bdpm.df.shape[0])
         # collection medicine
         for code_cis in self.Bdpm.df["Code CIS"]:
-            # bar.next()
+            bar.next()
             medicine: Medicine
 
             bdpm = self._get_line_by_cis(self.Bdpm, code_cis)
@@ -113,7 +113,7 @@ class TableFormat:
             title = self._get_value(bdpm, "Dénomination du médicament")
             m_name, m_weight = self._get_medicine_weight(title)
 
-            type_wording = self._get_value(compo, "Désignation de l'élément pharmaceutique")
+            type_wording = self._get_value(compo, "Désignation de lélément pharmaceutique")
             if type_wording is None:
                 type_wording = title
 
@@ -209,7 +209,7 @@ class TableFormat:
             )
 
             groups.add_medicine_into_group(medicine)
-        # bar.stop()
+        bar.stop()
 
         logging.info(f"data restructuring took {time.time() - start} seconds")
         return groups
@@ -254,6 +254,7 @@ class TableFormat:
             any: the value of the column or None
         """
         try:
+
             if df[column].empty:
                 return None
 

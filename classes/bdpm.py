@@ -19,6 +19,7 @@ class Bdpm(Table):
         self.open_csv()
 
     def format(self):
+
         # on garde que les médicaments qui sont commercialisés et autorisé
         self.df = self.df.loc[
             (self.df["Etat de commercialisation"] == "Commercialisée") &

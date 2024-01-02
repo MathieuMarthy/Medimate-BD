@@ -1,6 +1,8 @@
 from typing import Optional, Tuple
 from datetime import datetime
 
+import pandas as pd
+
 from classes.table import Table
 
 class Dispo(Table):
@@ -8,8 +10,8 @@ class Dispo(Table):
     def __init__(self):
         super().__init__("CIS_CIP_Dispo_Spec.txt")
         self.colums_names = [
-            "Code CIS", "Code CIP7", "CodeStatut", "Statut", # TODO: les dates miseAJour et RemiseDispo sont fusionnées
-            "DateDebut", "DateRemiseDispo", # "DateMiseAJour"
+            "Code CIS", "Code CIP7", "CodeStatut", "Statut",
+            "DateDebut", "DateRemiseDispo", "DateMiseAJour",
             "Lien vers la page du site ANSM",
         ]
 
@@ -22,10 +24,12 @@ class Dispo(Table):
 
         self.df.drop(columns_to_delete, axis=1, inplace=True)
 
+        self.df.dropna(inplace=True)
+
         # seperation of "DateMiseAJour" and "DateRemiseDispo"
-        self.df["DateMiseAJour"], self.df["DateRemiseDispo"] = zip(
-            *self.df["DateRemiseDispo"].map(self._split_date)
-        )
+        # self.df["DateMiseAJour"], self.df["DateRemiseDispo"] = zip(
+        #     *self.df["DateRemiseDispo"].map(self._split_date)
+        # )
 
         self.date_format = "%d/%m/%Y"
         for date in ["DateDebut", "DateMiseAJour", "DateRemiseDispo"]:
@@ -33,10 +37,13 @@ class Dispo(Table):
 
         # remove line if "DateRemiseDispo" is already passed
         now = datetime.now()
+        datetime_dispo = self.df["DateRemiseDispo"].apply(self._string_to_date)
         self.df = self.df[
-            datetime.strptime(self.df["DateRemiseDispo"], "%Y-%m-%d")
-            > now
+            datetime_dispo > now
         ]
+
+    def _string_to_date(self, date: str) -> datetime:
+        return datetime.strptime(date, "%Y-%m-%d")
 
     def _split_date(self, date: str) -> Tuple[Optional[str], str]:
         if len(date) > 10:

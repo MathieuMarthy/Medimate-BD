@@ -33,11 +33,9 @@ urls = scrapper.get_files_to_download()
 for url in urls:
     scrapper.download_file(url)
 
-
 # == Format == #
 tableFormat = TableFormat()
 tableFormat.format_tables()
-
 
 # == Transform into mongo collection == #
 groups = tableFormat.get_medicines()

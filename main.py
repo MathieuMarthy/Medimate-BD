@@ -1,8 +1,13 @@
 import logging
+import os
+
+from dotenv import load_dotenv
 
 from Scraper import Scraper
 from formatTable import TableFormat
-from mongo.collection.medicines import Medicines
+from mongo.mongo import Mongo
+
+load_dotenv()
 
 # == logger == #
 logging.basicConfig(filename="log.txt",
@@ -11,6 +16,15 @@ logging.basicConfig(filename="log.txt",
                     datefmt="%H:%M:%S",
                     encoding="utf-8",
                     level=logging.INFO)
+
+# == MongoDB == #
+mongo = Mongo(
+    host=os.getenv("MONGO_HOST"),
+    username=os.getenv("MONGO_USERNAME"),
+    password=os.getenv("MONGO_PASSWORD")
+)
+
+exit()
 
 # == Scrap == #
 scrapper = Scraper()
@@ -28,5 +42,4 @@ tableFormat.format_tables()
 
 # == Transform into mongo collection == #
 groups = tableFormat.get_medicines()
-groups.save_to_json("mongo/json/medicines.json")
 groups.save_to_json_flat_data("mongo/json/medicines_flat.json")

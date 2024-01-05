@@ -287,14 +287,20 @@ class TableFormat:
         """
         name_weight = medicine_name.split(",")[0]
 
+        unites = ["mg", "g", "ml", "l", "µg", "kg"]
+
         # find the first digit
         digit_index = re.search(r"\d", name_weight)
 
-        # if no digit, return the name
-        if not digit_index:
-            return name_weight, None
+        if digit_index is not None:
+            name_weight2 = [name_weight[:digit_index.start()], name_weight[digit_index.start():]]
 
-        return name_weight[:digit_index.start()].strip(), name_weight[digit_index.start():].strip()
+            for unite in unites:
+                if unite in name_weight2[1].lower():
+                    return name_weight2[0].strip(), name_weight2[1]
+
+        return name_weight, None
+
 
     def _get_generic_type(self, string: str) -> Tuple[str, str]:
         """Get the generic type of a medicine

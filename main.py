@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 
 from dotenv import load_dotenv
 
@@ -18,30 +19,40 @@ logging.basicConfig(filename="log.txt",
                     encoding="utf-8",
                     level=logging.INFO)
 
-# == MongoDB == #
-mongo = Mongo(
-    host=os.getenv("MONGO_HOST"),
-    username=os.getenv("MONGO_USERNAME"),
-    password=os.getenv("MONGO_PASSWORD")
-)
+def main():
+    # == MongoDB == #
+    mongo = Mongo(
+        host=os.getenv("MONGO_HOST"),
+        username=os.getenv("MONGO_USERNAME"),
+        password=os.getenv("MONGO_PASSWORD")
+    )
 
-# == Scrap == #
-scrapper = Scraper()
-urls = scrapper.get_files_to_download()
+    # == Scrap == #
+    scrapper = Scraper()
+    urls = scrapper.get_files_to_download()
 
-# == Download == #
-for url in urls:
-    scrapper.download_file(url)
+    # == Download == #
+    for url in urls:
+        scrapper.download_file(url)
 
-# == Format == #
-tableFormat = TableFormat()
-tableFormat.format_tables()
+    # == Format == #
+    tableFormat = TableFormat()
+    tableFormat.format_tables()
 
-# == Transform into mongo collection == #
-groups = tableFormat.get_medicines()
-filePath = "mongo/json/medicines_flat.json"
-groups.save_to_json_flat_data(filePath)
+    # == Transform into mongo collection == #
+    groups = tableFormat.get_medicines()
+    filePath = "mongo/json/medicines_flat.json"
+    groups.save_to_json_flat_data(filePath)
 
-# == Push data into mongo == #
-data = json.load(open(filePath, "r"))
-mongo.pushDataIntoMedicinesCollection(data)
+    # == Push data into mongo == #
+    data = json.load(open(filePath, "r"))
+    mongo.pushDataIntoMedicinesCollection(data)
+
+if __name__ == "__main__":
+    while True:
+        try:
+            main()
+            time.sleep(12 * 60 * 60) # 12 hours
+        except Exception as e:
+            logging.error(e)
+            continue

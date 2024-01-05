@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -24,8 +25,6 @@ mongo = Mongo(
     password=os.getenv("MONGO_PASSWORD")
 )
 
-exit()
-
 # == Scrap == #
 scrapper = Scraper()
 urls = scrapper.get_files_to_download()
@@ -42,4 +41,9 @@ tableFormat.format_tables()
 
 # == Transform into mongo collection == #
 groups = tableFormat.get_medicines()
-groups.save_to_json_flat_data("mongo/json/medicines_flat.json")
+filePath = "mongo/json/medicines_flat.json"
+groups.save_to_json_flat_data(filePath)
+
+# == Push data into mongo == #
+data = json.load(open(filePath, "r"))
+mongo.pushDataIntoMedicinesCollection(data)

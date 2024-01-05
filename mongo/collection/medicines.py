@@ -144,13 +144,13 @@ class Groups:
 
     def save_to_json(self, filepath: str):
         try:
-            json.dump(self, open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, '__dict__', str(o)))
+            json.dump(self, open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, "__dict__", str(o)))
         except Exception:
             logging.error("error while trying save groups", exc_info=True)
 
 
     def save_to_json_flat_data(self, filepath: str):
         try:
-            json.dump(self.get_all_medicines(), open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, '__dict__', str(o)))
+            json.dump(self.get_all_medicines(), open(filepath, "w", encoding="utf-8"), default=lambda o: getattr(o, "__dict__", str(o)))
         except Exception:
             logging.error("error while trying save groups", exc_info=True)

@@ -11,6 +11,8 @@ from mongo.mongo import Mongo
 
 load_dotenv()
 
+script_path = os.path.dirname(os.path.realpath(__file__))
+
 # == logger == #
 logging.basicConfig(filename="log.txt",
                     filemode="a",
@@ -41,7 +43,7 @@ def main():
 
     # == Transform into mongo collection == #
     groups = tableFormat.get_medicines()
-    filePath = "mongo/json/medicines_flat.json"
+    filePath = os.path.join(script_path, "mongo/json/medicines_flat.json")
     groups.save_to_json_flat_data(filePath)
 
     # == Push data into mongo == #

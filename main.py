@@ -47,6 +47,7 @@ def main():
     data = json.load(open(filePath, "r"))
     mongo.pushDataIntoMedicinesCollection(data)
 
+
 if __name__ == "__main__":
     while True:
         try:

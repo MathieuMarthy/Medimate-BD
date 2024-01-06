@@ -1,5 +1,5 @@
 .idea
 venv
 **/__pycache__
-csv
+csv/*.txt
 log.txt

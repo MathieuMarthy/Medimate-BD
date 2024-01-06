@@ -87,7 +87,10 @@ class Scraper:
         return filename
 
     def _load_updateDate(self):
-        self.updateDate = json.load(open(self.updateDate_filepath, "r", encoding="utf-8"))
+        try:
+            self.updateDate = json.load(open(self.updateDate_filepath, "r", encoding="utf-8"))
+        except FileNotFoundError:
+            self.updateDate = {}
 
     def _save_updateDate(self):
         json.dump(self.updateDate, open(self.updateDate_filepath, "w", encoding="utf-8"))

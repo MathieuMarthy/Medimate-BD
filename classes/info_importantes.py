@@ -3,10 +3,12 @@ import re
 from typing import Union
 
 from classes.table import Table
+from config import script_path
 
 
 def find_file_name() -> Union[str, None]:
-    files = os.listdir("csv")
+    csv_path = os.path.join(script_path, "csv")
+    files = os.listdir(csv_path)
 
     motif = re.compile(r'^CIS_InfoImportantes.*$')
 

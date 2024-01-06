@@ -6,9 +6,11 @@ import pymongo
 class Mongo:
 
     def __init__(self, host: str, username: str, password: str):
-        self.medicines_collection = "medicines"
         self.host = host
         self.username = username
+
+        self.medicines_collection = "medicines"
+        self.version_collection = "version"
 
         self.myclient = pymongo.MongoClient(
             host,
@@ -17,24 +19,35 @@ class Mongo:
         )
         logging.info("Connected to MongoDB")
 
-    def getOrCreateAndParamMedicinesCollection(self):
+        self.actualVersion = self.getActualVersion()
+        logging.info(f"Actual version: {self.actualVersion}")
+
+
+    def getOrCreateAndParamCollection(self, collection_name: str, index: str) -> pymongo.collection.Collection:
         db = self.myclient["database"]
 
-        if self.medicines_collection in db.list_collection_names():
-            return self.myclient["database"][self.medicines_collection]
+        if collection_name in db.list_collection_names():
+            return self.myclient["database"][collection_name]
 
-        db.create_collection(self.medicines_collection)
-        medicines_collection = db[self.medicines_collection]
-        medicines_collection.create_index("code_cis")
+        db.create_collection(collection_name)
+        collection = db[collection_name]
+        collection.create_index(index)
 
-        logging.info("Created and parametrized medicines collection")
+        logging.info(f"Created and parametrized {collection_name} collection")
 
-        return medicines_collection
+        return collection
+
+    def getMedicinesCollection(self) -> pymongo.collection.Collection:
+        return self.getOrCreateAndParamCollection(self.medicines_collection, "code_cis")
+
+    def getVersionCollection(self) -> pymongo.collection.Collection:
+        return self.getOrCreateAndParamCollection(self.version_collection, "version")
 
     def pushDataIntoMedicinesCollection(self, data: list[dict]) -> list[int]:
+        logging.info("Pushing data into medicines collection")
         start = time.time()
 
-        medicines_collection = self.getOrCreateAndParamMedicinesCollection()
+        medicines_collection = self.getMedicinesCollection()
 
         updated_documents_cis = []
         for document in data:
@@ -55,4 +68,31 @@ class Mongo:
         logging.info(f"Data inserted into medicines collection. Number of inserted documents: {len(updated_documents_cis)}")
         logging.info(f"Time elapsed: {time.time() - start} seconds")
 
+        if len(updated_documents_cis) > 0:
+            self.updateVersion(updated_documents_cis)
+
         return updated_documents_cis
+
+    def getActualVersion(self) -> int:
+        version_collection = self.getVersionCollection()
+
+        document = version_collection.find_one([("version", pymongo.DESCENDING)])
+
+        if document is None:
+            document = {"version": 1}
+            version_collection.insert_one(document)
+
+        return document["version"]
+
+    def updateVersion(self, updated_documents_cis: list[int]):
+        logging.info(f"Updating version to {self.actualVersion + 1}")
+
+        version_collection = self.getVersionCollection()
+        self.actualVersion += 1
+
+        version_collection.insert_one({
+            "version": self.actualVersion,
+            "updated_documents_cis": updated_documents_cis
+        })
+
+        logging.info(f"Version updated to {self.actualVersion} with {len(updated_documents_cis)} updated documents")

@@ -13,8 +13,8 @@ class Scraper:
 
     def __init__(self):
         self.url = "https://base-donnees-publique.medicaments.gouv.fr/telechargement.php"
-        self._load_updateDate()
         self.updateDate_filepath = os.path.join(script_path, "updateDate.json")
+        self._load_updateDate()
 
     def get_files_to_download(self):
         try:
@@ -87,10 +87,7 @@ class Scraper:
         return filename
 
     def _load_updateDate(self):
-        try:
-            self.updateDate = json.load(open(self.updateDate_filepath, "r", encoding="utf-8"))
-        except:
-            self.updateDate = {}
+        self.updateDate = json.load(open(self.updateDate_filepath, "r", encoding="utf-8"))
 
     def _save_updateDate(self):
         json.dump(self.updateDate, open(self.updateDate_filepath, "w", encoding="utf-8"))

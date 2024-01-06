@@ -53,7 +53,6 @@ if __name__ == "__main__":
             main()
         except Exception as e:
             logging.error(e)
-            continue
 
         logging.info("Sleeping...")
         time.sleep(12 * 60 * 60)  # 12 hours

@@ -19,13 +19,6 @@ logging.basicConfig(filename=log_filepath,
                     level=logging.INFO)
 
 def main():
-    # == MongoDB == #
-    mongo = Mongo(
-        host=os.getenv("MONGO_HOST"),
-        username=os.getenv("MONGO_USERNAME"),
-        password=os.getenv("MONGO_PASSWORD")
-    )
-
     # == Scrap == #
     scrapper = Scraper()
     urls = scrapper.get_files_to_download()
@@ -44,6 +37,12 @@ def main():
     groups.save_to_json_flat_data(filePath)
 
     # == Push data into mongo == #
+    mongo = Mongo(
+        host=os.getenv("MONGO_HOST"),
+        username=os.getenv("MONGO_USERNAME"),
+        password=os.getenv("MONGO_PASSWORD")
+    )
+
     data = json.load(open(filePath, "r"))
     mongo.pushDataIntoMedicinesCollection(data)
 

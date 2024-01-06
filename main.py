@@ -56,5 +56,5 @@ if __name__ == "__main__":
             logging.error(e)
             continue
 
-        print("Sleeping for 12 hours")
+        logging.info("Sleeping...")
         time.sleep(12 * 60 * 60)  # 12 hours

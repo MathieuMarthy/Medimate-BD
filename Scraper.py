@@ -81,7 +81,8 @@ class Scraper:
         except Exception as e:
             logging.error("error while downloading file", exc_info=True)
 
-        open(f"csv/{filename}", "wb").write(res.content)
+        filepath = os.path.join(script_path, "csv", filename)
+        open(filepath, "wb").write(res.content)
         logging.info(f"{filename} téléchargé")
         return filename
 

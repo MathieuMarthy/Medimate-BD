@@ -1,9 +1,11 @@
+import os
 from abc import ABC
 from datetime import datetime
 from typing import Union, Optional
 
 import pandas as pd
 from uwutilities import String_tools
+from config import script_path
 
 
 class Table(ABC):
@@ -16,10 +18,11 @@ class Table(ABC):
     def __init__(self, file_name: str) -> None:
         self.encoding = "latin-1"
         self.file_name = file_name
+        self.file_path = os.path.join(script_path, "csv", self.file_name)
 
     def open_csv(self, skip_rows: int = 0):
         """Open csv file and save it in a pandas dataframe"""
-        self.df = pd.read_csv(f"csv/{self.file_name}", sep="\t", encoding=self.encoding, names=self.colums_names, skiprows=skip_rows)
+        self.df = pd.read_csv(self.file_path, sep="\t", encoding=self.encoding, names=self.colums_names, skiprows=skip_rows)
 
     def format(self):
         """Format the dataframe"""

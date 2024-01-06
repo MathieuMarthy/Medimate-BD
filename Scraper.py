@@ -1,9 +1,11 @@
 import logging
+import os
 from datetime import datetime
 import requests
 import json
 
 from bs4 import BeautifulSoup as bs4, PageElement
+from config import script_path
 
 
 class Scraper:
@@ -12,6 +14,7 @@ class Scraper:
     def __init__(self):
         self.url = "https://base-donnees-publique.medicaments.gouv.fr/telechargement.php"
         self._load_updateDate()
+        self.updateDate_filepath = os.path.join(script_path, "updateDate.json")
 
     def get_files_to_download(self):
         try:
@@ -84,12 +87,12 @@ class Scraper:
 
     def _load_updateDate(self):
         try:
-            self.updateDate = json.load(open("./updateDate.json", "r", encoding="utf-8"))
+            self.updateDate = json.load(open(self.updateDate_filepath, "r", encoding="utf-8"))
         except:
             self.updateDate = {}
 
     def _save_updateDate(self):
-        json.dump(self.updateDate, open("./updateDate.json", "w", encoding="utf-8"))
+        json.dump(self.updateDate, open(self.updateDate_filepath, "w", encoding="utf-8"))
 
     def _get_name_by_url(self, url: str) -> str:
         return url.split("?fichier=")[1]

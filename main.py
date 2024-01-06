@@ -3,18 +3,15 @@ import logging
 import os
 import time
 
-from dotenv import load_dotenv
-
+from config import script_path
 from Scraper import Scraper
 from formatTable import TableFormat
 from mongo.mongo import Mongo
 
-load_dotenv()
-
-script_path = os.path.dirname(os.path.realpath(__file__))
 
 # == logger == #
-logging.basicConfig(filename="log.txt",
+log_filepath = os.path.join(script_path, "log.txt")
+logging.basicConfig(filename=log_filepath,
                     filemode="a",
                     format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
                     datefmt="%H:%M:%S",

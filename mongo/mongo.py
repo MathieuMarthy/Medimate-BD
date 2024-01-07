@@ -60,9 +60,9 @@ class Mongo:
             # Si le document existant est différent du nouveau document, remplacez-le
             if existing_document != document:
                 medicines_collection.replace_one(
-                    {"_id": document["code_cis"]},  # condition
-                    document,  # new document to insert
-                    upsert=True  # insert the document if it does not exist
+                    {"_id": document["code_cis"]},
+                    document,
+                    upsert=True
                 )
                 updated_documents_cis.append(document["code_cis"])
 
@@ -77,7 +77,7 @@ class Mongo:
     def getVersion(self) -> int:
         version_collection = self.getVersionCollection()
 
-        document = version_collection.find_one([("version", pymongo.DESCENDING)])
+        document = version_collection.find().sort("version", pymongo.DESCENDING).limit(1).next()
 
         if document is None:
             document = {"version": 1}
@@ -98,9 +98,16 @@ class Mongo:
 
         logging.info(f"Version updated to {self.actualVersion} with {len(updated_documents_cis)} updated documents")
 
-    def getMedicineByCis(self, cis: str):
+    def getMedicineByCis(self, cis: int):
         medicines_collection = self.getMedicinesCollection()
 
         medicine = medicines_collection.find_one({"_id": cis})
 
         return medicine
+
+
+mongo = Mongo(
+    host=os.getenv("MONGO_HOST"),
+    username=os.getenv("MONGO_USERNAME"),
+    password=os.getenv("MONGO_PASSWORD")
+)

@@ -6,7 +6,8 @@ import time
 from config import script_path
 from Scraper import Scraper
 from formatTable import TableFormat
-from mongo.mongo import Mongo
+from mongo.mongo import mongo
+from api import start_api
 
 
 # == logger == #
@@ -37,22 +38,20 @@ def main():
     groups.save_to_json_flat_data(filePath)
 
     # == Push data into mongo == #
-    mongo = Mongo(
-        host=os.getenv("MONGO_HOST"),
-        username=os.getenv("MONGO_USERNAME"),
-        password=os.getenv("MONGO_PASSWORD")
-    )
-
     data = json.load(open(filePath, "r"))
     mongo.pushDataIntoMedicinesCollection(data)
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            main()
-        except Exception as e:
-            logging.error(e)
+    main()
+    start_api()
+    print("Started")
 
+    while True:
         logging.info("Sleeping...")
         time.sleep(12 * 60 * 60)  # 12 hours
+        try:
+            main()
+            pass
+        except Exception as e:
+            logging.error(e)

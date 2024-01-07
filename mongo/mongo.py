@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 
 import pymongo
@@ -19,7 +20,7 @@ class Mongo:
         )
         logging.info("Connected to MongoDB")
 
-        self.actualVersion = self.getActualVersion()
+        self.actualVersion = self.getVersion()
         logging.info(f"Actual version: {self.actualVersion}")
 
 
@@ -73,7 +74,7 @@ class Mongo:
 
         return updated_documents_cis
 
-    def getActualVersion(self) -> int:
+    def getVersion(self) -> int:
         version_collection = self.getVersionCollection()
 
         document = version_collection.find_one([("version", pymongo.DESCENDING)])
@@ -96,3 +97,17 @@ class Mongo:
         })
 
         logging.info(f"Version updated to {self.actualVersion} with {len(updated_documents_cis)} updated documents")
+
+    def getMedicineByCis(self, cis: str):
+        medicines_collection = self.getMedicinesCollection()
+
+        medicine = medicines_collection.find_one({"_id": cis})
+
+        return medicine
+
+
+mongo = Mongo(
+    host=os.getenv("MONGO_HOST"),
+    username=os.getenv("MONGO_USERNAME"),
+    password=os.getenv("MONGO_PASSWORD")
+)

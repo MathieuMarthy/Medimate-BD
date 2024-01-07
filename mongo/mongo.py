@@ -104,10 +104,3 @@ class Mongo:
         medicine = medicines_collection.find_one({"_id": cis})
 
         return medicine
-
-
-mongo = Mongo(
-    host=os.getenv("MONGO_HOST"),
-    username=os.getenv("MONGO_USERNAME"),
-    password=os.getenv("MONGO_PASSWORD")
-)

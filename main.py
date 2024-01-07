@@ -6,7 +6,7 @@ import time
 from config import script_path
 from Scraper import Scraper
 from formatTable import TableFormat
-from mongo.mongo import mongo
+from mongo.mongo import Mongo
 from api import start_api
 
 
@@ -38,6 +38,11 @@ def main():
     groups.save_to_json_flat_data(filePath)
 
     # == Push data into mongo == #
+    mongo = Mongo(
+        host=os.getenv("MONGO_HOST"),
+        username=os.getenv("MONGO_USERNAME"),
+        password=os.getenv("MONGO_PASSWORD")
+    )
     data = json.load(open(filePath, "r"))
     mongo.pushDataIntoMedicinesCollection(data)
 

@@ -37,4 +37,4 @@ def get_medicines_route(cis):
 
 
 def start_api():
-    app.run(host="localhost", port=8080)
+    app.run(host="0.0.0.0", port=8080)

@@ -81,7 +81,7 @@ class Mongo:
         try:
             document = version_collection.find().sort("version", pymongo.DESCENDING).limit(1).next()
         except StopIteration:
-            document = {"version": 1}
+            document = {"version": 1, "updated_documents_cis": []}
             version_collection.insert_one(document)
 
         return document["version"], document["updated_documents_cis"]

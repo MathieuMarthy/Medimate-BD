@@ -86,16 +86,17 @@ class Mongo:
 
         return document["version"], document["updated_documents_cis"]
 
-    def getChangesBetweenClientVersion(self, clientVersion: int) -> list[int]:
+    def getChangesBetweenClientVersion(self, clientVersion: int) -> Tuple[int, list[int]]:
         version_collection = self.getVersionCollection()
 
+        version = self.getVersion()[0]
         documents = version_collection.find({"version": {"$gt": clientVersion}})
 
         updated_documents_cis = []
         for document in documents:
             updated_documents_cis += document["updated_documents_cis"]
 
-        return updated_documents_cis
+        return version, updated_documents_cis
 
     def updateVersion(self, updated_documents_cis: list[int]):
         logging.info(f"Updating version to {self.actualVersion + 1}")

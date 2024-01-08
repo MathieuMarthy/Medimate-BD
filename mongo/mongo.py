@@ -78,9 +78,9 @@ class Mongo:
     def getVersion(self) -> Tuple[int, list[int]]:
         version_collection = self.getVersionCollection()
 
-        document = version_collection.find().sort("version", pymongo.DESCENDING).limit(1).next()
-
-        if document is None:
+        try:
+            document = version_collection.find().sort("version", pymongo.DESCENDING).limit(1).next()
+        except StopIteration:
             document = {"version": 1}
             version_collection.insert_one(document)
 

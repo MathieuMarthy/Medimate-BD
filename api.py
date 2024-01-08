@@ -23,7 +23,7 @@ def version_route():
 
 @app.route("/version/<int:clientVersion>")
 def get_diff_between_versions_route(clientVersion):
-    if not isinstance(clientVersion, int):
+    if not isinstance(clientVersion, int) or clientVersion < 0:
         return None, 400
 
     codes_cis = mongo.getChangesBetweenClientVersion(clientVersion)

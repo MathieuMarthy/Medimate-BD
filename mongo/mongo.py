@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from typing import Tuple
 
 import pymongo
 
@@ -74,7 +75,7 @@ class Mongo:
 
         return updated_documents_cis
 
-    def getVersion(self) -> int:
+    def getVersion(self) -> Tuple[int, list[int]]:
         version_collection = self.getVersionCollection()
 
         document = version_collection.find().sort("version", pymongo.DESCENDING).limit(1).next()
@@ -83,7 +84,18 @@ class Mongo:
             document = {"version": 1}
             version_collection.insert_one(document)
 
-        return document["version"]
+        return document["version"], document["updated_documents_cis"]
+
+    def getChangesBetweenClientVersion(self, clientVersion: int) -> list[int]:
+        version_collection = self.getVersionCollection()
+
+        documents = version_collection.find({"version": {"$gt": clientVersion}})
+
+        updated_documents_cis = []
+        for document in documents:
+            updated_documents_cis += document["updated_documents_cis"]
+
+        return updated_documents_cis
 
     def updateVersion(self, updated_documents_cis: list[int]):
         logging.info(f"Updating version to {self.actualVersion + 1}")

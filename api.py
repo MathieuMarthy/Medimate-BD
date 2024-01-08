@@ -12,14 +12,30 @@ app.logger.setLevel(logging.ERROR)
 def ping_route():
     return "i'm alive"
 
+
 @app.route("/version")
 def version_route():
-    mongo_version = mongo.getVersion()
-    return {"version": mongo_version}
+    version, updated_documents_cis = mongo.getVersion()
+    return {
+        "version": version,
+        "updated_documents_cis": updated_documents_cis
+    }
 
-@app.route("/medicine/<string:cis>")
+@app.route("/version/<int:clientVersion>")
+def get_diff_between_versions_route(clientVersion):
+    if not isinstance(clientVersion, int):
+        return None, 400
+
+    codes_cis = mongo.getChangesBetweenClientVersion(clientVersion)
+    return codes_cis
+
+
+@app.route("/medicine/<int:cis>")
 def get_medicines_route(cis):
-    medicine = mongo.getMedicineByCis(int(cis))
+    if not isinstance(cis, int):
+        return None, 400
+
+    medicine = mongo.getMedicineByCis(cis)
 
     if medicine is None:
         return {"error": "no medicine found with this cis"}, 404

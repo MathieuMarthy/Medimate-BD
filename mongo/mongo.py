@@ -21,7 +21,7 @@ class Mongo:
         )
         logging.info("Connected to MongoDB")
 
-        self.actualVersion = self.getVersion()
+        self.actualVersion = self.getVersion()[0]
         logging.info(f"Actual version: {self.actualVersion}")
 
 

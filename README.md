@@ -3,6 +3,13 @@
 </p>
 <h1 align="center">MediMate</h1>
 
+## Description
+
+This script was created as part of a 3rd year Computer Science project at the IUT in Nantes.  
+It is linked to a medical application: [MediMate](https://github.com/syysy/MediMate)  
+This project recovers data on drugs available in France, cleans the data and transfers it to a mongoDB server.
+
+
 ## Authors
 
 - [@Mathieu BERGERON](https://github.com/Mthieu44)

@@ -18,7 +18,7 @@ This project recovers data on drugs available in France, cleans the data and tra
 
 ## Installation
 
-Clone the project
+Clone the project !
 
 ```bash
   git clone https://github.com/MathieuMarthy/Medimate-BD

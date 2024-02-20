@@ -1,13 +1,7 @@
-import json
-import logging
 import os
-import time
+import logging
 
 from config import script_path
-from Scraper import Scraper
-from formatTable import TableFormat
-from mongo.mongo import mongo
-from api import start_api
 
 
 # == logger == #
@@ -18,6 +12,16 @@ logging.basicConfig(filename=log_filepath,
                     datefmt="%H:%M:%S",
                     encoding="utf-8",
                     level=logging.INFO)
+
+import json
+import time
+
+
+from Scraper import Scraper
+from formatTable import TableFormat
+from mongo.mongo import mongo
+from api import start_api
+
 
 def main():
     # == Scrap == #
